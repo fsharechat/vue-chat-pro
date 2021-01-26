@@ -116,6 +116,28 @@ export default class LocalStore {
         }
         return messageId;
     }
+    
+    static setMessageReports(value){
+        localStorage.setItem("message_reports",JSON.stringify(value))
+    }
+
+    static getMessageReports(){
+        let value = localStorage.getItem("message_reports");
+        if(value){
+            return JSON.parse(value)
+        } else {
+            return []
+        }
+    }
+
+    static setGroupInfos(value){
+        localStorage.setItem("group_infos",JSON.stringify(value))
+    }
+
+    static getGroupInfos(){
+        let value = localStorage.getItem("group_infos")
+        return JSON.parse(value)
+    }
 
     static clearLocalStore(){
         localStorage.setItem("coversations","");
@@ -126,5 +148,6 @@ export default class LocalStore {
         localStorage.setItem("friend_request_version",0);
         localStorage.setItem(KEY_VUE_USER_ID,'');
         localStorage.setItem("message_id",0);
+        localStorage.setItem("message_reports",'');
     }
 }

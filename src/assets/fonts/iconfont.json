@@ -6,6 +6,76 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "16039997",
+      "name": "置顶",
+      "font_class": "zhiding1",
+      "unicode": "e638",
+      "unicode_decimal": 58936
+    },
+    {
+      "icon_id": "16117578",
+      "name": "免打扰",
+      "font_class": "miandarao",
+      "unicode": "e619",
+      "unicode_decimal": 58905
+    },
+    {
+      "icon_id": "428403",
+      "name": "最大化",
+      "font_class": "zuidahua1",
+      "unicode": "e65b",
+      "unicode_decimal": 58971
+    },
+    {
+      "icon_id": "9359222",
+      "name": "max",
+      "font_class": "all_max",
+      "unicode": "e61e",
+      "unicode_decimal": 58910
+    },
+    {
+      "icon_id": "6527330",
+      "name": "max",
+      "font_class": "max1",
+      "unicode": "e69d",
+      "unicode_decimal": 59037
+    },
+    {
+      "icon_id": "13080757",
+      "name": "quit 2",
+      "font_class": "quit",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "3003340",
+      "name": "quit",
+      "font_class": "quit1",
+      "unicode": "e66a",
+      "unicode_decimal": 58986
+    },
+    {
+      "icon_id": "8713173",
+      "name": "max",
+      "font_class": "max",
+      "unicode": "e694",
+      "unicode_decimal": 59028
+    },
+    {
+      "icon_id": "11779514",
+      "name": "Ding",
+      "font_class": "Ding",
+      "unicode": "e657",
+      "unicode_decimal": 58967
+    },
+    {
+      "icon_id": "13075347",
+      "name": "min",
+      "font_class": "min",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
+    {
       "icon_id": "5100253",
       "name": "视频",
       "font_class": "shipin",

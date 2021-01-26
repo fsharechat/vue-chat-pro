@@ -1,6 +1,7 @@
 <template>
     <div class="addfrind">
         <el-dialog
+        :lock-scroll="false"
         title="添加好友"
         :visible.sync="showSearchFriendDialog"
         width="30%"
@@ -23,7 +24,7 @@
         </span>   
         </el-dialog>
 
-        <el-input v-model="friendInput" prefix-icon="el-icon-search" placeholder="请输入手机号码或昵称" @keydown.enter.native="searchUser"></el-input>
+        <el-input v-model="friendInput" prefix-icon="el-icon-search" placeholder="输入手机号码,按Enter搜索" clearable=true @keydown.enter.native="searchUser"></el-input>
         <el-table
             :data="searchUsers"
             :show-header="false"

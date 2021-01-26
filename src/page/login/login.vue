@@ -1,9 +1,10 @@
 <template>
   <!--  账号输入登录-->
   <div class="login_box">
-    <router-link to="#">
+    <winbar/>
+    <!-- <router-link to="#">
       <div class="login_close"></div>
-    </router-link>
+    </router-link> -->
     <div class="login_panel">
       <div class="login_title">
         <img src="../../assets/img/logo.png" alt="">
@@ -26,8 +27,12 @@ import { LOGIN_API, KEY_VUE_DEVICE_ID, KEY_VUE_USER_ID, KEY_VUE_TOKEN, SNED_VERI
 import { mapGetters } from 'vuex'
 import UUID from 'uuid-js'
 import axios from 'axios'
+import winbar from '../../components/winbar';
 export default {
   name: 'Login',
+  components: {
+      winbar
+  },
   data () {
     return {
       mobile: '',
@@ -80,6 +85,7 @@ export default {
                   localStorage.setItem(KEY_VUE_TOKEN,token);
                   //跳转到聊天页面
                   this.$router.push({path: '/conversation'})
+                  // this.$electron.ipcRenderer.send('hasLogged', true)
               } else {
                 this.$message.error(response.data.message);
               }
@@ -138,13 +144,13 @@ export default {
   .login_box {
     z-index: 99;
     position: absolute;
-    width: 380px;
-    height: 540px;
-    top: 50%;
+    width: 316px;
+    height: 485px;
+    /* top: 56%;
     left: 50%;
     margin-left: -190px;
     margin-top: -270px;
-    border-radius: 6px;
+    border-radius: 6px; */
     background-color: #fff;
     box-shadow: 0 2px 10px #999;
   }

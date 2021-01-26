@@ -177,8 +177,8 @@ export default {
 
 <style lang="stylus" scoped>
 .newfriend
-    height: 60px
-    padding: 28px 0 0 30px
+    height: 35px
+    padding: 8px 0 0 30px
     box-sizing: border-box
     .nickname
         font-size: 18px

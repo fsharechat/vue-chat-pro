@@ -67,6 +67,7 @@ export default {
 		},
 		loginOut(){
 			this.$store.dispatch('loginOut','');
+			// this.$electron.ipcRenderer.send('hasLogged', false)
 		},
 		changeFullScreenMode(){
 			var fullscreen = this.$store.state.changeFullScreenMode;

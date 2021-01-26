@@ -32,17 +32,10 @@ export default class FileMessageContent extends MediaMessageContent {
             if(payload.searchableContent.indexOf(FileMessageContent.FILE_NAME_PREFIX) === 0){
                 this.name = payload.searchableContent.substring(payload.searchableContent.indexOf(FileMessageContent.FILE_NAME_PREFIX) + FileMessageContent.FILE_NAME_PREFIX.length);
             }else {
-        this.name = payload.searchableContent;
+                this.name = payload.searchableContent;
             }
-        this.size = this.formateSize(payload.content);
+                this.size = Number(payload.content);
         }
-    }
-
-    formateSize(value) { if (null == value || value == '') { return "0 Bytes"; }
-        var unitArr = new Array("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"); var index = 0;
-        var srcsize = parseFloat(value); index = Math.floor(Math.log(srcsize) / Math.log(1024));
-        var size = srcsize / Math.pow(1024, index); size = size.toFixed(2);		//保留的小数位数
-        return size + unitArr[index];
     }
 
 }

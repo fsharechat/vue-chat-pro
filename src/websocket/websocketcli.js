@@ -75,9 +75,23 @@ export class WebSocketClient {
     }
 
     //注意beforeUid最好为string类型
-    getRemoteMessages(conversation,beforeUid,count){
+   getRemoteMessages(conversation,beforeUid,count){
       return vuexStore.state.vueSocket.getRemoteMessages(conversation,beforeUid,count)
-    }
+   }
+   
+   /**
+    * 此方法只在单聊会话中上报,群组不上包送达回执
+    * date 当前上报的时间
+    * target 上报送达回执的target,即是这个会话的target
+    * sender 
+    */
+   uploadDeliveryReport(date,target){
+      return vuexStore.state.vueSocket.uploadDeliveryReport(date,target)
+   }
+
+   uploadReadReport(date,target,conversationType){
+      return vuexStore.state.vueSocket.uploadReadReport(date,target,conversationType)
+   }
 
 }
 

@@ -8,6 +8,7 @@
 </template>
 
 <script>
+// import { ipcRenderer } from 'electron'
 import { mapActions } from 'vuex'
 import searchfriend from './page/friend/searchfriend'
 import creategroup from './page/group/creategroup'
@@ -17,7 +18,10 @@ export default {
    components: {
      searchfriend,
      creategroup,
-     relayMessage,
+     relayMessage
+   },
+   mounted(){
+    //  ipcRenderer.send('hasLogged', localStorage.getItem('vue-token') ? true : false)
    }
 }
 </script>

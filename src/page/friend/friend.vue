@@ -5,6 +5,7 @@
       <friendlist></friendlist>
 		</div>
 		<div class="friendinfo">
+      <winbar/>
 			<info></info>
 		</div>
 	</div>
@@ -14,11 +15,13 @@
 import search from '../../components/search/search'
 import friendlist from '../../components/friendlist/friendlist'
 import info from '../../components/info/info'
+import winbar from '../../components/winbar';
 export default{
     components: {
         search,
         friendlist,
-        info
+        info,
+        winbar
     }
 }
 </script>

@@ -1,6 +1,7 @@
 <template>
     <div class="relay-message">
         <el-dialog
+        :lock-scroll="false"
         title="转发"
         :visible.sync="showRelayMessageDialog"
         width="30%"
@@ -26,6 +27,15 @@
 
           <div v-if="isVideoMessage && innerVisible" style="text-align:center">
             <Xgplayer :config="videoConfig" @player="Player = $event"/>
+            <!-- <xgplayer :options="videoConfig(item,false,imageThumnailSrc(item))"></xgplayer> -->
+          </div>
+
+          <div v-if="isFileMessage" style="text-align:center">
+                [文件]
+          </div>
+
+          <div v-if="isLocationMessage" style="text-align:center">
+                [位置]
           </div>
           
           <span slot="footer" class="dialog-footer">
@@ -164,6 +174,7 @@ export default {
                 })
              }
          }
+         console.log("relay message "+conversationList)
          return conversationList;
      },
      isTextMessage(){
@@ -189,7 +200,24 @@ export default {
           }
           console.log("flag "+flag)
           return flag
+     },
+     isFileMessage(){
+         var flag = false
+          if(this.currentRightMenuMessage){
+              flag = this.currentRightMenuMessage.content.type == 5
+          }
+          console.log("flag "+flag)
+          return flag
+     },
+     isLocationMessage(){
+         var flag = false
+          if(this.currentRightMenuMessage){
+              flag = this.currentRightMenuMessage.content.type == 4
+          }
+          console.log("flag "+flag)
+          return flag
      }
+
    }
 }
 </script>

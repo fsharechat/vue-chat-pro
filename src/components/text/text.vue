@@ -108,7 +108,7 @@
 
 <script>
 import adapter from 'webrtc-adapter'
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState,mapActions } from 'vuex'
 import TextMessageContent from '../../websocket/message/textMessageContent'
 import ImageMessageContent from '../../websocket/message/imageMessageContent'
 import * as qiniu from 'qiniu-js'
@@ -124,6 +124,8 @@ import Message from '../../websocket/message/message'
 import ProtoMessage from '../../websocket/message/protomessage'
 import VideoMessageContent from '../../websocket/message/videoMessageContent'
 import FileMessageContent from '../../websocket/message/fileMessageContent'
+import MessageStatus from "../../websocket/message/messageStatus";
+import axios from 'axios'
 export default {
     data () {
         return {
@@ -172,6 +174,10 @@ export default {
         ])
     },
     methods: {
+        ...mapActions([
+             'setFileDownloadStatus',
+             'updateMessageStatus'
+        ]),
         sendPic(e){
            var store = this.$store;
            var file = e.target.files[0];
@@ -381,17 +387,51 @@ export default {
                     store.dispatch('preAddProtoMessage', protoMessage);
             
 
-                    fetch(data.result.url, {
-                        method: 'PUT',
-                        body: file
-                        }).then(() => {
-                            var remotePath = data.result.domain+"/"+key;
-                            console.log("remote path "+remotePath)
-                            var message = new FileMessageContent(file,remotePath);
-                            store.dispatch('updateSendMessage', {messageId: messageId,messageContent:message})
-                        }).catch((e) => {
-                            console.error(e);
-                        });
+                    // fetch(data.result.url, {
+                    //     method: 'PUT',
+                    //     body: file
+                    //     }).then(() => {
+                    //         var remotePath = data.result.domain+"/"+key;
+                    //         console.log("remote path "+remotePath)
+                    //         var message = new FileMessageContent(file,remotePath);
+                    //         store.dispatch('updateSendMessage', {messageId: messageId,messageContent:message})
+                    //     }).catch((e) => {
+                    //         console.error(e);
+                    //     });
+
+                    axios.request( {
+                        method: "PUT", 
+                        url: data.result.url, 
+                        data: file, 
+                        onUploadProgress: (p) => {
+                            var percent = Number(Math.floor(p.loaded / p.total * 100))
+                            console.log("upload percent "+percent); 
+
+                            //set upload percent
+                            this.setFileDownloadStatus({
+                                "messageId": messageId,
+                                "downloadStatus": 1,
+                                "downloadPercent": percent
+                            })
+                        }
+                    }).then (response => {
+                        //设置上传文件成功
+                        this.setFileDownloadStatus({
+                            "messageId": messageId,
+                            "downloadStatus": 2,
+                            "downloadPercent": 100
+                        })
+                        var remotePath = data.result.domain+"/"+key;
+                        console.log("remote path "+remotePath)
+                        var message = new FileMessageContent(file,remotePath);
+                        store.dispatch('updateSendMessage', {messageId: messageId,messageContent:message})
+                    }).catch( error => {
+                        console.log("upload error")
+                        this.updateMessageStatus({
+                            messageId: messageId,
+                            status: MessageStatus.SendFailure
+                        })
+                    })    
                 }
                 }) 
 

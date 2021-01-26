@@ -1,6 +1,7 @@
 <template>
    <div class="create-group" v-if="showCreateGroupDialog">
        <el-dialog
+        :lock-scroll="false"
         :visible.sync="showCreateGroupDialog"
         width="45%"
         :show-close="false"

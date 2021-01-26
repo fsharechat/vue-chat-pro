@@ -60,9 +60,9 @@ export default {
     width: 100%
     height: 100%
   display: flex
-  border-radius 50px
   width: 75%
   height: 80%
+  border-radius 50px
   background-color: #fff
   .sidebar
     width: 60px

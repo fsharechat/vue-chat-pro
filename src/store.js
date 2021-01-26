@@ -21,6 +21,9 @@ import ProtoMessageContent from './websocket/message/protomessageContent';
 import Logger from './websocket/utils/logger';
 import RecallMessageNotification from './websocket/message/notification/recallMessageNotification';
 import MessageStatus from './websocket/message/messageStatus';
+// import { ipcRenderer } from 'electron'
+import StateMessageReport from './websocket/model/stateMessageReport';
+import ChangeGroupNameNotification from './websocket/message/notification/changeGroupNameNotification';
 
 Vue.use(Vuex)
 
@@ -135,7 +138,7 @@ const state = {
     //修改全屏模式
     changeFullScreenMode: false,
     appHeight: 638,
-    visibilityState: 'hidden',
+    visibilityState: 'visible',
     //是否限制音视频对话框
     showChatBox: false,
     showAudioBox: false,
@@ -153,7 +156,12 @@ const state = {
     groupOperateState: 0,
     groupMemberMap: new Map(),
     groupMemberTracker: 0,
-    isLoadRemoteMessage: false
+    isLoadRemoteMessage: false,
+    // 是否最大化窗口
+    isWinMaxed: false,
+    fileDownloadStatus: [],
+    stateMessageReports: [],
+    groupSendMessageUserMap: new Map()
 }
 
 const mutations = {
@@ -179,6 +187,14 @@ const mutations = {
         if(userInfoList){
             state.userInfoList = userInfoList;
         }
+        let messageReports = LocalStore.getMessageReports();
+        if(messageReports){
+            state.stateMessageReports = messageReports;
+        }
+        let groupInfos = LocalStore.getGroupInfos();
+        if(groupInfos){
+            state.groupInfoList = groupInfos;
+        }
         state.notify = new Notify({
             effect: 'flash',
             interval: 500,
@@ -187,19 +203,19 @@ const mutations = {
                 state.notify.close();
             },
             audio:{
-                file: ['/static/audio/notify.mp3']
+                file: ['static/audio/notify.mp3']
             }
         });
         
         state.inCommingNotify =  new Notify({
             audio:{
-                file: ['/static/audio/incoming_call_ring.mp3']
+                file: ['static/audio/incoming_call_ring.mp3']
             }
         });
 
         state.outGoingNotify = new Notify({
             audio:{
-                file: ['/static/audio/outgoing_call_ring.mp3']
+                file: ['static/audio/outgoing_call_ring.mp3']
             }
         });
 
@@ -213,11 +229,21 @@ const mutations = {
        state.selectId = value
     },
     selectConversation(state,value){
+       //清除托盘闪烁
+    //    ipcRenderer.send('hasFlashTray', false)
+       state.isLoadRemoteMessage = false 
        state.selectTarget = value;
        //清除未读数
        var stateConversationInfo = state.conversations.find(stateConversationInfo => stateConversationInfo.conversationInfo.target === value);
        if(stateConversationInfo && stateConversationInfo.conversationInfo.unreadCount){
          stateConversationInfo.conversationInfo.unreadCount.unread = 0;
+       }
+       //上报已读回执
+       //群组会话,要上报当前发送消息的用户id集合
+       if(stateConversationInfo.conversationInfo.conversationType == ConversationType.Group){
+        state.vueSocket.uploadReadReport(new Date().getTime(),value,stateConversationInfo.conversationInfo.conversationType,state.groupSendMessageUserMap.get(value))
+       } else {
+        state.vueSocket.uploadReadReport(new Date().getTime(),value,stateConversationInfo.conversationInfo.conversationType)
        }
     },
 
@@ -352,6 +378,7 @@ const mutations = {
               state.userInfoList.push(currentUserInfo);
            }
         }
+
         this.commit("updateConversationBrief")
         this.commit("updateMessageBrief")
     },
@@ -539,6 +566,16 @@ const mutations = {
         if(update){
             state.conversations.splice(currentConversationInfoIndex,1);
             state.conversations.unshift(updateStateConverstaionInfo);
+
+            //非首次登录,如果是修改群组名称消息,需要重新更新群组信息
+            if(!state.firstLogin){
+                var contentClass = MessageConfig.getMessageContentClazz(protoConversationInfo.lastMessage.content.type);
+                var content = new contentClass();
+                console.log("is chanage GroupName "+content instanceof ChangeGroupNameNotification)
+                if(content instanceof ChangeGroupNameNotification) {
+                    state.vueSocket.getGroupInfo(protoConversationInfo.target,false);
+                }
+            }
         }
         if(!update){
            updateStateConverstaionInfo = new StateConversationInfo();
@@ -553,8 +590,15 @@ const mutations = {
                     updateStateConverstaionInfo.name = name;
                     updateStateConverstaionInfo.img = img;
                 } else {
-                    updateStateConverstaionInfo.name = protoConversationInfo.target;
-                    updateStateConverstaionInfo.img = 'static/images/vue.jpg';
+                    var user = state.userInfoList.find(user => user.uid == protoConversationInfo.target)
+                    if(user){
+                        updateStateConverstaionInfo.name = user.displayName;
+                        updateStateConverstaionInfo.img = user.portrait;
+                    } else {
+                        updateStateConverstaionInfo.name = protoConversationInfo.target;
+                        updateStateConverstaionInfo.img = 'static/images/vue.jpg';
+                    }
+                    
                 }
             } else {
                 //群聊会话
@@ -573,8 +617,11 @@ const mutations = {
         console.log("current message "+isCurrentConversationMessage +" visible "+visibilityStateVisible+" first login "+state.firstLogin);
         //只显示接收消息，同一用户不同session，不再通知
         var isShowSendingMessage = protoConversationInfo.lastMessage.direction === 1;
+        //消息免打扰模式
+        var isSlient = updateStateConverstaionInfo.conversationInfo.isSilent
         //更新会话消息未读数
-        if(!state.firstLogin && (!isCurrentConversationMessage || (isCurrentConversationMessage && !visibilityStateVisible)) && isShowSendingMessage){
+        if(!state.firstLogin && (!isCurrentConversationMessage || (isCurrentConversationMessage && !visibilityStateVisible)) 
+                && isShowSendingMessage && !isSlient){
            //统计消息未读数,注意服务端暂时还没有将透传消息发送过来，原则上这里过来的消息都不是透传消息
            var num = updateStateConverstaionInfo.conversationInfo.unreadCount.unread += 1;
            var notifyBody = protoConversationInfo.lastMessage.content.searchableContent;
@@ -591,9 +638,11 @@ const mutations = {
                     icon: updateStateConverstaionInfo.img
                 });
             }
+            //托盘闪烁
+            // ipcRenderer.send('hasFlashTray', true)
         }
 
-
+        this.commit('updateConverstaionOrder');
        
     },
 
@@ -617,6 +666,62 @@ const mutations = {
                stateChatMessage.name = groupInfo.name+"("+groupInfo.memberCount+")";
            }
         }
+    },
+
+    topConversation(state,targetId){
+        for(var stateConverstaionInfo of state.conversations){
+            if(stateConverstaionInfo.conversationInfo.target == targetId){
+                stateConverstaionInfo.conversationInfo.isTop = true;
+                break;
+            }
+        }
+        this.commit('updateConverstaionOrder');
+    },
+
+    unTopConversation(state,targetId){
+        for(var stateConverstaionInfo of state.conversations){
+            if(stateConverstaionInfo.conversationInfo.target == targetId){
+                stateConverstaionInfo.conversationInfo.isTop = false;
+                break;
+            }
+        }
+        this.commit('updateConverstaionOrder');
+    },
+
+    silentConversation(state,targetId){
+        for(var stateConverstaionInfo of state.conversations){
+            if(stateConverstaionInfo.conversationInfo.target == targetId){
+                stateConverstaionInfo.conversationInfo.isSilent = true;
+                break;
+            }
+        }
+    },
+
+    unSlientConversation(state,targetId){
+        for(var stateConverstaionInfo of state.conversations){
+            if(stateConverstaionInfo.conversationInfo.target == targetId){
+                stateConverstaionInfo.conversationInfo.isSilent = false;
+                break;
+            }
+        }
+    },
+
+    updateConverstaionOrder(){
+        var topConversations = []
+        var unTopConversations = []
+        state.conversations.forEach(stateConversationInfo => {
+            if(stateConversationInfo.conversationInfo.isTop){
+                topConversations.push(stateConversationInfo)
+            } else {
+                unTopConversations.push(stateConversationInfo)
+            }
+        })
+        console.log("topConversations "+topConversations.length +" unTopConversations "+unTopConversations.length)
+        unTopConversations.forEach(stateConversationInfo => {
+            topConversations.push(stateConversationInfo)
+        })
+        state.conversations = topConversations
+        
     },
 
     //获取用户当前会话的历史消息
@@ -649,23 +754,33 @@ const mutations = {
                added = true;
                var isSameProtoMessage = stateChatMessage.protoMessages.find(message => message.messageId === protoMessage.messageId);
                if(!isSameProtoMessage){
+                   //如果单个会话超过50,去除历史消息
+                if(stateChatMessage.protoMessages.length > CONVERSATION_MAX_MESSAGE_SIZE){
+                    stateChatMessage.protoMessages.splice(0, stateChatMessage.protoMessages.length - CONVERSATION_MAX_MESSAGE_SIZE );
+                }
                 stateChatMessage.protoMessages.push(protoMessage);
                } else {
                    isExistMessage = true;
                }
            }
        }
+
        if(!added){
           var stateChatMessage = new StateChatMessage();
           var friend = state.friendlist.find(friend => friend.wxid === protoMessage.target);
           if(friend != null){
              stateChatMessage.name =  friend.nickname;
+          } else {
+            var user = state.userInfoList.find(user => user.uid == protoMessage.target)
+            if(user){
+                stateChatMessage.name = user.displayName;
+            }
           }
           stateChatMessage.target = protoMessage.target;
           stateChatMessage.protoMessages.push(protoMessage);
           state.messages.push(stateChatMessage);
        }
-       //console.log("current message "+protoMessage.messageId +" isExist "+isExistMessage);
+       console.log("current message "+protoMessage.messageId +" isExist "+isExistMessage);
        if(!isExistMessage){
            var protoConversationInfo = new ProtoConversationInfo();
            protoConversationInfo.conversationType = protoMessage.conversationType;
@@ -722,6 +837,21 @@ const mutations = {
         }
     },
 
+    setFileDownloadStatus(state,fileDownloadStatus){
+        console.log("set setFileDownloadStatus "+fileDownloadStatus.downloadPercent)
+        var fileItem = state.fileDownloadStatus.find(fileItem => fileItem.messageId == fileDownloadStatus.messageId)
+        if(fileItem){
+             fileItem.downloadStatus = fileDownloadStatus.downloadStatus
+             fileItem.downloadPercent = fileDownloadStatus.downloadPercent
+        } else {
+            state.fileDownloadStatus.push({
+                "messageId": fileDownloadStatus.messageId,
+                "downloadStatus": fileDownloadStatus.downloadStatus,
+                "downloadPercent": fileDownloadStatus.downloadPercent
+            })
+        }
+    },
+
     deleteMessage(state,messageId){
         var stateChatMessage = state.messages.find(stateChatMessage => stateChatMessage.target === state.selectTarget);
         if(stateChatMessage){
@@ -736,6 +866,17 @@ const mutations = {
             if(index != -1){
                 stateChatMessage.protoMessages.splice(index,1)
             }
+        }
+    },
+
+    clearConversationMessages(state,target){
+        var stateChatMessage = state.messages.find(stateChatMessage => stateChatMessage.target === target);
+        if(stateChatMessage){
+            stateChatMessage.protoMessages = []
+        }
+        var stateConversationInfo = state.conversations.find(stateConversationInfo => stateConversationInfo.conversationInfo.target == target)
+        if(stateConversationInfo){
+            stateConversationInfo.conversationInfo.lastMessage = null
         }
     },
 
@@ -856,6 +997,72 @@ const mutations = {
     },
     changeEmptyMessageState(state,value){
         state.emptyMessage = value;
+    },
+    SET_WINMAXIMIZE(state, data) {
+        state.isWinMaxed = data
+    },
+
+    addMessageReport(state, messageReport){
+        var stateMessageReport  = state.stateMessageReports.find( stateMessageReport => messageReport.target == stateMessageReport.target)
+        if(!stateMessageReport){
+            stateMessageReport = new StateMessageReport()
+            // let stateConversation = state.conversations.find(stateConversation => stateConversation.conversationInfo.target === messageReport.target);
+            // stateMessageReport.conversationType = stateConversation.conversationInfo.conversationType
+            stateMessageReport.target = messageReport.target;
+            state.stateMessageReports.push(stateMessageReport)
+        }
+        console.log("push message report target "+messageReport.target+ " date "+messageReport.date)
+
+        var currentMessageReport = stateMessageReport.messageReports.find(currentMessageReport => {
+            if(messageReport.reportType == currentMessageReport.reportType &&
+                messageReport.uid == currentMessageReport.uid &&
+                messageReport.target == currentMessageReport.target){
+                return true
+            } 
+            return false;
+        })
+        if(currentMessageReport){
+           currentMessageReport.date = messageReport.date
+        } else {
+            stateMessageReport.messageReports.push(messageReport)
+        }  
+    },
+
+    addGroupSendUser(state,sendMessageUserInfo){
+        var userList = state.groupSendMessageUserMap.get(sendMessageUserInfo.target)
+        if(userList){
+           var user = userList.find(user => sendMessageUserInfo.from == user);
+           if(!user){
+               userList.push(sendMessageUserInfo.from)
+           }
+        } else {
+            userList = [sendMessageUserInfo.from]
+            state.groupSendMessageUserMap.set(sendMessageUserInfo.target,userList)
+        }
+    },
+
+    /**
+     * 
+     * 上报回执
+     * 送达回执只上报单聊
+     * 已读回执,如果当前会话处于visible状态,则上报已读回执
+     */
+    uploadReport(state,protoMessage){
+        if(protoMessage.direction == 1){
+            if(protoMessage.conversationType == ConversationType.Single){
+              var currentTime = new Date().getTime();
+              this.state.vueSocket.uploadDeliveryReport(currentTime,protoMessage.target)
+            }
+           
+            if(state.selectTarget == protoMessage.target && state.visibilityState == 'visible'){
+                console.log("current target "+protoMessage.target +" is visible upload read report")
+                if(protoMessage.conversationType == ConversationType.Group){
+                    state.vueSocket.uploadReadReport(new Date().getTime(),protoMessage.target,protoMessage.conversationType,state.groupSendMessageUserMap.get(protoMessage.target))
+                } else {
+                    state.vueSocket.uploadReadReport(new Date().getTime(),protoMessage.target,protoMessage.conversationType)
+                }
+            }
+          }
     }
 
 }
@@ -866,6 +1073,13 @@ const getters = {
         } else {
             return []
         }
+    },
+    currentGroupMemberCount(){
+        var groupInfo = state.groupInfoList.find(groupInfo => groupInfo.target == state.selectTarget)
+        if(groupInfo){
+            return groupInfo.memberCount
+        } 
+        return 0;
     },
     //筛选会话列表
     searchedConversationList(){
@@ -1046,6 +1260,15 @@ const actions = {
     preAddProtoMessage: ({ commit }, value) => commit('preAddProtoMessage', value),
     updateSendMessage: ({ commit }, value) => commit('updateSendMessage', value),
     addOldMessage: ({ commit }, value) => commit('addOldMessage', value),
+    topConversation: ({ commit }, value) => commit('topConversation', value),
+    unTopConversation: ({ commit }, value) => commit('unTopConversation', value),
+    silentConversation: ({ commit }, value) => commit('silentConversation', value),
+    unSlientConversation: ({ commit }, value) => commit('unSlientConversation', value),
+    clearConversationMessages: ({ commit }, value) => commit('clearConversationMessages', value),
+    setFileDownloadStatus: ({ commit }, value) => commit('setFileDownloadStatus', value),
+    addMessageReport: ({ commit }, value) => commit('addMessageReport', value),
+    addGroupSendUser: ({ commit }, value) => commit('addGroupSendUser', value),
+    uploadReport: ({ commit }, value) => commit('uploadReport', value),
 }
 const store = new Vuex.Store({
   state,
@@ -1094,5 +1317,27 @@ store.watch(
         deep : true
     }
 )
+
+
+store.watch(
+    state => state.stateMessageReports,
+    value => {
+        LocalStore.setMessageReports(value);
+    },
+    {
+        deep : true
+    }
+)
+
+store.watch(
+    state => state.groupInfoList,
+    value => {
+        LocalStore.setGroupInfos(value);
+    },
+    {
+        deep : true
+    }
+)
+
 
 export default store;

@@ -1,4 +1,4 @@
-import {PUBLISH, FP, UPUI, MP, MS, KEY_VUE_USER_ID, KEY_VUE_DEVICE_ID, DISCONNECT, GPGI, GQNUT, US, FAR, FRP, FHR, MMI, GPGM, GC, GQ, PUB_ACK, ERROR_CODE, MR, GAM, GMI, GKM, GD, GMURL, FALS, LRM} from '../constant'
+import {PUBLISH, FP, UPUI, MP, MS, KEY_VUE_USER_ID, KEY_VUE_DEVICE_ID, DISCONNECT, GPGI, GQNUT, US, FAR, FRP, FHR, MMI, GPGM, GC, GQ, PUB_ACK, ERROR_CODE, MR, GAM, GMI, GKM, GD, GMURL, FALS, LRM, MDR, MRP, MRR} from '../constant'
 import {decrypt,encrypt} from './utils/aes'
 import {CONNECT} from '../constant'
 import {WebSocketProtoMessage} from './message/websocketprotomessage'
@@ -39,6 +39,10 @@ import DismissGroupHandler from './handler/dismissGroupHandler';
 import GetMinioUploadUrlHandler from './handler/getMinioUploadUrlHandler';
 import SetFriendAliasRequestHandler from './handler/setFriendAliasRequestHandler';
 import LoadRemoteMessageHandler from './handler/loadRemoteMessageHander';
+import DeliveryReportHandler from './handler/deliveryReportHandler';
+import PullMessageReportHandler from './handler/pullMessageReportHandler';
+import NotifyMessageReportHandler from './handler/notifyMessageReportHandler';
+import ReadReportHandler from './handler/ReadReportHandler';
 export default class VueWebSocket {
     handlerList = [];
     userDisconnect = false;
@@ -179,6 +183,10 @@ export default class VueWebSocket {
         this.handlerList.push(new GetMinioUploadUrlHandler(this))
         this.handlerList.push(new SetFriendAliasRequestHandler(this))
         this.handlerList.push(new LoadRemoteMessageHandler(this))
+        this.handlerList.push(new DeliveryReportHandler(this))
+        this.handlerList.push(new ReadReportHandler(this))
+        this.handlerList.push(new PullMessageReportHandler(this))
+        this.handlerList.push(new NotifyMessageReportHandler(this))
     }
 
     processMessage(data){
@@ -368,6 +376,23 @@ export default class VueWebSocket {
         })
     }
 
+    async uploadDeliveryReport(date,target){
+        return await this.sendPublishMessage(MDR,{
+            date: date,
+            target: target
+        })
+    }
+
+    async uploadReadReport(date,target,conversationType,tos = []){
+        return await this.sendPublishMessage(MRR,{
+            target: target,
+            date: date,
+            type: conversationType,
+            line: 0,
+            tos: tos
+        })
+    }
+
     pullMessage(messageId,type = 0,pullType = 0,sendMessageCount = 0){
         this.sendPublishMessage(MP,{
             messageId: messageId,
@@ -375,6 +400,13 @@ export default class VueWebSocket {
             pullType : pullType,
             sendMessageCount: sendMessageCount
         });
+    }
+
+    pullMessageReport(reportId,type){
+        this.sendPublishMessage(MRP,{
+            id: reportId,
+            type: type
+        })
     }
 
     getUploadToken(mediaType){

@@ -47,12 +47,13 @@ export default class VoipClient extends OnReceiverMessageListener{
         var newSession = this.newSession(target,isAudioOnly,target + new Date().getTime());
         newSession.setState(CallState.STATUS_OUTGOING);
         this.currentSession = newSession;
+        //如果时视频，启动预览
+        this.startPreview();
         console.log("create new session "+this.currentSession.clientId+" callId "+this.currentSession.callId);
         //发送callmessage
         var callStartMessageContent = new CallStartMessageContent(newSession.callId,target,isAudioOnly);
         this.offerMessage(target,callStartMessageContent);
-        //如果时视频，启动预览
-        this.startPreview();
+        
     }
 
     cancelCall(){
@@ -69,7 +70,7 @@ export default class VoipClient extends OnReceiverMessageListener{
         console.log("isInitiator "+this.isInitiator);
         this.currentSession.setState(CallState.STATUS_CONNECTING);
         var answerTMesage = new CallAnswerTMessageContent()
-        answerTMesage.isAudioOnly = audioOnly;
+        answerTMesage.audioOnly = audioOnly;
         answerTMesage.callId = this.currentSession.callId;
         this.offerMessage(this.currentSession.clientId,answerTMesage);
         this.startPreview();
@@ -255,10 +256,10 @@ export default class VoipClient extends OnReceiverMessageListener{
         try {
           this.mediaConstraints = {
             audio: true,            // We want an audio track
-            video: !this.currentSession.isAudioOnly
+            video: !this.currentSession.audioOnly
           }
           this.webcamStream = await navigator.mediaDevices.getUserMedia(this.mediaConstraints);
-          if(!this.currentSession.isAudioOnly){
+          if(!this.currentSession.audioOnly){
             this.currentSessionCallback.didCreateLocalVideoTrack(this.webcamStream);
           }
           
@@ -396,7 +397,7 @@ export default class VoipClient extends OnReceiverMessageListener{
 
     handleTrackEvent = (event) => {
       console.log("comming stream");
-      if(this.currentSession.isAudioOnly){
+      if(this.currentSession.audioOnly){
          this.currentSessionCallback.didReceiveRemoteAudioTrack(event.streams[0]);
       } else {
         this.currentSessionCallback.didReceiveRemoteVideoTrack(event.streams[0]);
@@ -443,7 +444,7 @@ export default class VoipClient extends OnReceiverMessageListener{
             // element, then stopping each of the getUserMedia() tracks
             // on it.
 
-            if(!this.currentSession.isAudioOnly){
+            if(!this.currentSession.audioOnly){
               var localVideo = document.getElementById("wxCallLocalVideo");
               if (localVideo.srcObject) {
                   localVideo.pause();
@@ -451,15 +452,7 @@ export default class VoipClient extends OnReceiverMessageListener{
                   track.stop();
                   });
               }
-            } else {
-              this.webcamStream.getTracks.forEach(
-                track => {
-                  track.stop();
-                }
-              )
-            }
-            
-        
+            }       
             // Close the peer connection
         
             this.myPeerConnection.close();

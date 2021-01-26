@@ -8,6 +8,7 @@ import UnreadCount from "../model/unReadCount";
 import MessageConfig from "../message/messageConfig";
 import PersistFlag from "../message/persistFlag";
 import ChatManager from "../chatManager";
+import ConversationType from "../model/conversationType";
 
 export default class ReceiveMessageHandler extends AbstractMessageHandler {
       conversations = [];
@@ -28,7 +29,9 @@ export default class ReceiveMessageHandler extends AbstractMessageHandler {
         for(var protoMessage of content.messageResponseList){
           var protoMessage = ProtoMessage.toProtoMessage(protoMessage);
           if(MessageConfig.isDisplayableMessage(protoMessage)){
+            this.computeGroupSendMessageUsers(protoMessage)
             this.addProtoMessage(protoMessage);
+            this.uploadReport(protoMessage)
           }
           ChatManager.onReceiveMessage(protoMessage);
         } 
@@ -37,5 +40,31 @@ export default class ReceiveMessageHandler extends AbstractMessageHandler {
 
       addProtoMessage(protoMessage){
          this.vueWebsocket.sendAction('addProtoMessage',protoMessage);
+      }
+
+      /**
+       * 只上报单聊用户的送达回执
+       * @param  protoMessage 
+       */
+      uploadReport(protoMessage){
+        // if(protoMessage.direction == 1){
+        //   if(protoMessage.conversationType == ConversationType.Single){
+        //     var currentTime = new Date().getTime();
+        //     this.vueWebsocket.uploadDeliveryReport(currentTime,protoMessage.target)
+        //   }
+        // }
+        this.vueWebsocket.sendAction('uploadReport',protoMessage)
+      }
+
+      /**
+       * 统计群组发送消息的用户列表
+       */
+      computeGroupSendMessageUsers(protoMessage){
+         if(protoMessage.direction == 1 && protoMessage.conversationType == ConversationType.Group){
+            this.vueWebsocket.sendAction('addGroupSendUser',{
+              from: protoMessage.from,
+              target: protoMessage.target
+            })
+         }
       }
 }

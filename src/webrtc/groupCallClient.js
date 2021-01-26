@@ -238,6 +238,7 @@ export default class GroupCallClient extends OnReceiverMessageListener {
             return console.error(error)
           }
           if(_this.currentSessionCallback){
+            _this.currentSession.setState(CallState.STATUS_CONNECTING);
              _this.currentSessionCallback.didCreateLocalVideoTrack()
           }
           this.generateOffer (participant.offerToReceiveVideo.bind(participant));

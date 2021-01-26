@@ -21,6 +21,8 @@ import DismissGroupNotification from './notification/dismissGroupNotification'
 import LocalStore from '../store/localstore'
 import VideoMessageContent from './videoMessageContent'
 import FileMessageContent from './fileMessageContent'
+import SoundMessageContent from './soundMessageContent'
+import LocationMessageContent from './locationMessageContent'
 export default class MessageConfig{
     static getMessageContentClazz(type) {
         for (const content of MessageConfig.MessageContents) {
@@ -96,6 +98,7 @@ export default class MessageConfig{
             name: 'voice',
             flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.Voice,
+            contentClazz: SoundMessageContent
         },
         {
             name: 'image',
@@ -107,6 +110,7 @@ export default class MessageConfig{
             name: 'location',
             flag: PersistFlag.Persist_And_Count,
             type: MessageContentType.Location,
+            contentClazz: LocationMessageContent
         },
         {
             name: 'file',

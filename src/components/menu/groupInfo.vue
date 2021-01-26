@@ -250,7 +250,7 @@ export default {
     background: #fff
     height: 200px
     width: 220px
-    top: 61px
+    top: 36px
     right: 0px
     z-index: 2000
     border-left: 1px solid #e7e7e7 
