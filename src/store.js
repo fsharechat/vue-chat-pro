@@ -922,7 +922,7 @@ const mutations = {
         LocalStore.clearLocalStore();
         ChatManager.removeOnReceiveMessageListener();
         //发送断开消息，清除session，防止同一个设备切换登录导致的验证失败
-        router.push({path: '/login'})
+        router.push({path: '/verifysmscodelogin'})
     },
 
     changetFirstLogin(state,value){
