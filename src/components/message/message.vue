@@ -85,47 +85,11 @@
                                                 <i class="ico-bg"></i> 
                                                     <div class="file-info flex1"> 
                                                         <p class="name">{{fileMessageConfig(item).name}}</p>
-                                                        <p class="size">{{fileMessageConfig(item).size}}</p>
+                                                        <p class="size">{{fileSize(item)}}</p>
                                                     </div> 
                                                 <a class="btn-down" :href="fileMessageConfig(item).remotePath" target="_blank"></a>
                                             </div>
                                         </div>
-                                        <!-- <div class="attachment"> 
-                                            <div class="flexbox flex-alignc"> 
-                                                <i class="ico-bg" 
-                                                style="background: url('static/images/icon__attachment-white.png') no-repeat center #3aa4dd;background-size: 20px; 
-                                                    display: inline-block; 
-                                                    vertical-align: top; 
-                                                    height: 40px; 
-                                                    width: 40px;"></i> 
-                                                    <div class="file-info flex1"> 
-                                                        <p class="name">{{fileMessageConfig(item).name}}</p>
-                                                        <p class="size">{{fileSize(item)}}</p>
-                                                    </div>
-                                                <div class="download-status">
-                                                    <el-progress style="padding:2px" type="circle" :stroke-width=2 :text-inside=false :width=18 :percentage="downloadPercent(item)" v-if="downloadStatus(item) == 1"></el-progress>
-                                                    <a class="btn-down" v-if="downloadStatus(item) == 0"
-                                                        style="background: url(static/images/icon__download.png) no-repeat center; 
-                                                            background-size: 15px; 
-                                                            display: inline-block; 
-                                                            vertical-align: top; 
-                                                            height: 30px; 
-                                                            width: 30px;" 
-                                                        @click="downloadFile(item)">
-                                                    </a>
-                                                    <a class="btn-down" v-if="downloadStatus(item) == 2"
-                                                        style="background: url(static/images/downloaded.png) center center / 15px no-repeat; 
-                                                            background-size: 15px; 
-                                                            display: inline-block; 
-                                                            vertical-align: top; 
-                                                            height: 30px; 
-                                                            width: 30px;" 
-                                                        @click="downloadFile(item)">
-                                                    </a>
-                                                </div>     
-                                                
-                                            </div>
-                                        </div> -->
                                     </div>
                                     <div v-if="item.content.type === 6" >
                                         <Xgplayer :config="videoConfig(item,false,imageThumnailSrc(item))" @player="Player = $event"/>
@@ -1105,7 +1069,7 @@ export default {
                                 display: inline-block; 
                                 vertical-align: top; 
                                 height: 30px; 
-                                width: 20px;                  
+                                width: 20px;
                         .text
                             white-space: pre-wrap;
                         &:before
