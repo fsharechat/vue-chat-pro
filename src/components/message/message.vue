@@ -82,6 +82,16 @@
                                     <div v-if="item.content.type === 5">
                                         <div class="attachment"> 
                                             <div class="flexbox flex-alignc"> 
+                                                <i class="ico-bg"></i> 
+                                                    <div class="file-info flex1"> 
+                                                        <p class="name">{{fileMessageConfig(item).name}}</p>
+                                                        <p class="size">{{fileMessageConfig(item).size}}</p>
+                                                    </div> 
+                                                <a class="btn-down" :href="fileMessageConfig(item).remotePath" target="_blank"></a>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="attachment"> 
+                                            <div class="flexbox flex-alignc"> 
                                                 <i class="ico-bg" 
                                                 style="background: url('static/images/icon__attachment-white.png') no-repeat center #3aa4dd;background-size: 20px; 
                                                     display: inline-block; 
@@ -94,7 +104,6 @@
                                                     </div>
                                                 <div class="download-status">
                                                     <el-progress style="padding:2px" type="circle" :stroke-width=2 :text-inside=false :width=18 :percentage="downloadPercent(item)" v-if="downloadStatus(item) == 1"></el-progress>
-                                                    <!-- <i title = "正在下载中" class="icon iconfont icon-loading-solid" v-if="downloadStatus(item) == 1"></i> -->
                                                     <a class="btn-down" v-if="downloadStatus(item) == 0"
                                                         style="background: url(static/images/icon__download.png) no-repeat center; 
                                                             background-size: 15px; 
@@ -116,7 +125,7 @@
                                                 </div>     
                                                 
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </div>
                                     <div v-if="item.content.type === 6" >
                                         <Xgplayer :config="videoConfig(item,false,imageThumnailSrc(item))" @player="Player = $event"/>
@@ -1072,6 +1081,7 @@ export default {
                             min-width: 200px
                             max-width: 350px
                             .ico-bg
+                                background: url(/static/images/icon__attachment-white.png) no-repeat center #3aa4dd;
                                 background-size: 20px; 
                                 display: inline-block; 
                                 vertical-align: top; 
@@ -1089,18 +1099,13 @@ export default {
                             .size
                                 color: #666;
                                 font-size: 12px;
-                            .download-status    
-                                .btn-down
-                                    background-size: 15px; 
-                                    display: inline-block; 
-                                    vertical-align: top; 
-                                    height: 30px; 
-                                    width: 20px;
-                                .icon
-                                    display: block
-                                    font-size: 16px     
-                                .icon-loading-solid
-                                    animation: changeright 1s linear infinite                    
+                            .btn-down
+                                background: url(/static/images/icon__download.png) no-repeat center; 
+                                background-size: 15px; 
+                                display: inline-block; 
+                                vertical-align: top; 
+                                height: 30px; 
+                                width: 20px;                  
                         .text
                             white-space: pre-wrap;
                         &:before
