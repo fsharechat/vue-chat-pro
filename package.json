@@ -1,7 +1,7 @@
 {
-  "name": "wechat",
-  "version": "1.1.8",
-  "description": "基于fshare的开源即时通讯web客户端",
+  "name": "fsharechat-web",
+  "version": "1.1.9",
+  "description": "基于fsharechat的开源即时通讯web客户端",
   "author": "comsince",
   "private": true,
   "scripts": {
@@ -30,7 +30,8 @@
     "vuex": "^3.0.1",
     "webrtc-adapter": "^7.5.1",
     "xgplayer": "^2.4.7",
-    "xgplayer-vue": "^1.1.5"
+    "xgplayer-vue": "^1.1.5",
+    "create-html-element": "^4.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",

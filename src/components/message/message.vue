@@ -142,7 +142,8 @@ import ConversationType from '../../websocket/model/conversationType';
 import ProtoMessage from '../../websocket/message/protomessage'
 import TextMessageContent from '../../websocket/message/textMessageContent'
 // import linkifyUrls from 'linkify-urls'
-import Clipboard from 'clipboard';
+import linkifyUrls from '../../websocket/utils/linkfyurl'
+import Clipboard from 'clipboard'
 import streamSaver from 'streamsaver'
 import BenzAMRRecorder from 'benz-amr-recorder'
 // import electron from 'electron'
@@ -487,13 +488,13 @@ export default {
         },
 
         isLinkTextMessage(protoMessage){
-            // if(this.isTextMessage(protoMessage)){
-            //     var message = this.textMessage(protoMessage)
-            //     var linkMessage = linkifyUrls(message,{
-            //         value: url => url
-            //     })
-            //     return linkMessage.includes('<a href')
-            // }
+            if(this.isTextMessage(protoMessage)){
+                var message = this.textMessage(protoMessage)
+                var linkMessage = linkifyUrls(message,{
+                    value: url => url
+                })
+                return linkMessage.includes('<a href')
+            }
             return false;
         },
 
