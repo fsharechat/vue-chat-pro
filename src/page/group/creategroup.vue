@@ -291,6 +291,7 @@ export default {
                                 this.fullscreenLoading = false;
                             }
                        })
+                       break;
                     case 4:
                         this.$store.state.showGroupCallVideoDialog = true
                         this.$store.state.groupCallMembers = memberIds
