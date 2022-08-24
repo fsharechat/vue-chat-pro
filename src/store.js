@@ -432,7 +432,9 @@ const mutations = {
         }
         //重新选择新的会话
         if(state.conversations.length > 0){
-            state.selectTarget = state.conversations[0].conversationInfo.target
+            let nextIndex = index - 1 >= 0 ? index - 1: 0;
+            console.log("deleteConversation nextIndex="+nextIndex);
+            state.selectTarget = state.conversations[nextIndex].conversationInfo.target
         }
     },
 
@@ -539,9 +541,22 @@ const mutations = {
             newStateConversationInfo.conversationInfo = protoConversationInfo;
             state.conversations.unshift(newStateConversationInfo);
         } else {
+            var index = -1
+            for(var i = 0; i<state.conversations.length; i++){
+                if(state.conversations[i].conversationInfo.target == stateConversationInfo.conversationInfo.target){
+                    index = i;
+                    break;
+                }
+            }
+            console.log("select conversation index "+index)
+            if(index != -1){
+                state.conversations.splice(index,1);
+            }
+            state.conversations.unshift(stateConversationInfo)
             state.selectTarget = stateConversationInfo.conversationInfo.target
             
         }
+        this.commit('updateConverstaionOrder');
         router.push({ path: '/conversation'})
     },
 
@@ -608,7 +623,12 @@ const mutations = {
                 }
                 updateStateConverstaionInfo.img = 'static/images/vue.jpg';
             }
-            state.conversations.push(updateStateConverstaionInfo);
+            state.conversations.unshift(updateStateConverstaionInfo);
+
+            if(protoConversationInfo.conversationType == ConversationType.Group){
+               //将高亮聚焦到该会话
+                this.commit("selectConversation",protoConversationInfo.target)
+            }
         }
 
         // 消息是否属于当前会话
