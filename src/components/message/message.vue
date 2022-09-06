@@ -980,7 +980,7 @@ export default {
                 border-radius: 3px
             .content 
                 display:inline-block
-                width: 65%   
+                width: 90%   
                 .display-name
                     margin-left: 10px
                     margin-bottom: 5px

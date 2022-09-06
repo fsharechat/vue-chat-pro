@@ -1,6 +1,6 @@
 {
   "name": "fsharechat-web",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "基于fsharechat的开源即时通讯web客户端",
   "author": "comsince",
   "private": true,
