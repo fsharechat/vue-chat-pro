@@ -1,8 +1,7 @@
 import AbstractMessageHandler from "./abstractmessagehandler";
 import { PUB_ACK, UPUI, ERROR_CODE, SUCCESS_CODE } from "../../constant";
 import UserInfo from "../model/userInfo";
-import py from "pinyin"
-import { isBuffer } from "util";
+import { pinyin } from 'pinyin-pro';
 import FutureResult from "../future/futureResult";
 
 export default class GetUserInfoHandler extends AbstractMessageHandler{
@@ -17,22 +16,17 @@ export default class GetUserInfoHandler extends AbstractMessageHandler{
            var userInfos = [];
            for(var i in userInfoList){
                var displayName = userInfoList[i].displayName === '' ? userInfoList[i].mobile : userInfoList[i].displayName;
-               var pinyinInitial = py(displayName,{
-                   style: py.STYLE_FIRST_LETTER
-               });
-               var initial = pinyinInitial[0][0];
-               
-               if(initial.length > 1){
-                   var initial = initial.substr(0,1);
-                   var reg= /^[A-Za-z]/;
-                   if(reg.test(initial)){
-                     initial = initial.toUpperCase();
-                   } else {
+               var pinyinInitial = pinyin(displayName, { pattern: 'first', toneType: 'none', type: 'array' });
+               var initial = pinyinInitial[0];
+               console.log("displayName "+displayName+" initial "+initial)
+
+                var reg= /^[A-Za-z]/;
+                if(reg.test(initial)){
+                    initial = initial.toUpperCase();
+                } else {
                     initial = "#";
-                   }
-               } else {
-                 initial = initial.toUpperCase();
-               }
+                }
+               
                stateFriendList.push({
                 id: parseInt(i) + 1,
                 wxid: userInfoList[i].uid, //微信号

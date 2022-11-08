@@ -1,6 +1,6 @@
 {
   "name": "fsharechat-web",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "基于fsharechat的开源即时通讯web客户端",
   "author": "comsince",
   "private": true,
@@ -14,11 +14,12 @@
     "axios": "^0.18.0",
     "benz-amr-recorder": "^1.1.2",
     "clipboard": "^2.0.6",
+    "create-html-element": "^4.0.1",
     "crypto-js": "^3.1.9-1",
     "element-ui": "^2.13.0",
     "kurento-utils": "^6.14.0",
     "linkify-urls": "^3.1.0",
-    "pinyin": "^2.9.0",
+    "pinyin-pro": "^3.11.0",
     "qiniu-js": "^2.5.5",
     "streamsaver": "^2.0.4",
     "uuid-js": "^0.7.5",
@@ -30,8 +31,7 @@
     "vuex": "^3.0.1",
     "webrtc-adapter": "^7.5.1",
     "xgplayer": "^2.4.7",
-    "xgplayer-vue": "^1.1.5",
-    "create-html-element": "^4.0.1"
+    "xgplayer-vue": "^1.1.5"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",
