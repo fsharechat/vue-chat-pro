@@ -218,14 +218,14 @@ export default {
         align-items: flex-start
         text-align: center;
         display:block;
-        width: 15px;
-        height: 15px
+        width: 10px;
+        height: 10px
     .list-left
         padding: 12px 0        
         .avatar
             border-radius: 2px
     .list-right
-        padding: 12px 12px 0 12px 
+        padding: 12px 6px 0 12px 
         position: relative
         flex: 1
         margin-top: 4px
@@ -244,14 +244,15 @@ export default {
             .time
                 flex: 0 0 auto
                 float: right
-                width: 30px
+                width: 60px
                 height: 15px
+                text-align: right
                 overflow: hidden
                 white-space:nowrap
                 text-overflow:ellipsis
                 line-height: 15px
                 color: #999
-                font-size: 10px
+                font-size: 12px
                 vertical-align: center
         .lastmsg-info
             display: flex
@@ -284,14 +285,14 @@ export default {
                 vertical-align:bottom
                 margin-top: 0px
                 display: inline-block;
-                min-width: 16px;
-                height: 16px;
+                min-width: 15px;
+                height: 15px;
                 background-color: red;
                 border-radius: 8px;
                 text-align: center;
                 font-size: 12px;
                 color: #fff;
-                line-height: 16px;
+                line-height: 15px;
                 .unread-num-show
                    text-align: center;
                    font-size:10px;

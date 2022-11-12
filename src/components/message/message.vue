@@ -924,7 +924,7 @@ export default {
         height: 14%
         max-height: 35px
         min-height: 35px 
-        padding: 0px 0 0 30px
+        padding: 0px 0 0 12px
         box-sizing: border-box
         display:flex
         .friendname
@@ -942,7 +942,7 @@ export default {
       .message-wrapper
         -webkit-user-select: text;
         height: 86%
-        padding: 10px 15px
+        padding: 5px 0px
         box-sizing: border-box
         overflow-y: auto
         border-top: 1px solid #e7e7e7
@@ -976,7 +976,7 @@ export default {
             margin-top: 10px
             .avatar 
                 float: left
-                margin-left: 15px
+                margin-left: 12px
                 border-radius: 3px
             .content 
                 display:inline-block
@@ -1084,7 +1084,7 @@ export default {
             text-align: right
             .avatar
                 float: right
-                margin:0 15px
+                margin:0 10px
             .content
                 .report-status
                     display: flex

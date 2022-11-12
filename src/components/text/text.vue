@@ -724,7 +724,7 @@ export default {
         height: 26%
         line-height: 40px
         font-size: 12px
-        padding: 0 30px
+        padding: 0 12px
         box-sizing: border-box
         color: #7c7c7c
         i
@@ -989,7 +989,7 @@ export default {
                 background: #39ba70             
     textarea
         box-sizing: border-box
-        padding: 0 30px
+        padding: 0 12px
         height: 74%
         width: 100%
         border: none
@@ -1000,7 +1000,7 @@ export default {
     .send
         position: absolute
         bottom: 10px
-        right: 30px
+        right: 12px
         width: 75px
         height: 28px
         line-height: 28px
