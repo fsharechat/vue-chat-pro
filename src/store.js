@@ -49,6 +49,7 @@ const state = {
             sex: 0,   //性别 1为男，0为女
             remark: "新的朋友",  //备注
             area: "",  //地区
+            mobile: "", //手机号
         }
         
     ],
@@ -263,6 +264,9 @@ const mutations = {
            } else {
              state.newFriendRequestCount = 0;
            }
+       } else {
+            let friend = state.friendlist.find(friend => friend.id === state.selectFriendId);
+            state.vueSocket.getUserInfo(friend.wxid)
        }
     },
 
@@ -279,6 +283,7 @@ const mutations = {
             sex: 0,   //性别 1为男，0为女
             remark: "新的朋友",  //备注
             area: "",  //地区
+            mobile: "", //手机号
             });
         }
         for(var i in value){

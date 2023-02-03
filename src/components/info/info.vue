@@ -67,6 +67,7 @@
                 </div>
 	   	    	<div class="area"><span>地&nbsp&nbsp&nbsp区</span>{{selectedFriend.area}}</div>
 	   	    	<div class="wxid"><span>微信号</span>{{selectedFriend.wxid}}</div>
+                <div class="mobile"><span>手机号</span>{{selectedFriend.mobile}}</div>
 	   	    </div>
 	   	    <div class="send" @click="send">
     	        <span>发消息</span>
@@ -220,7 +221,7 @@ export default {
 	    padding: 40px 0
 	    border-top: 1px solid #e7e7e7
 	    border-bottom: 1px solid #e7e7e7
-	    .remark,.area,.wxid
+	    .remark,.area,.wxid,.mobile
 	        font-size: 14px
 	        margin-top: 20px
 	        span

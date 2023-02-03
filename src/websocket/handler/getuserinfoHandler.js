@@ -37,6 +37,7 @@ export default class GetUserInfoHandler extends AbstractMessageHandler{
                 sex: 0,   //性别 1为男，0为女
                 remark: displayName,  //备注
                 area: userInfoList[i].address,  //地区
+                mobile: userInfoList[i].mobile, //手机号
                });
                userInfos.push(UserInfo.convert2UserInfo(userInfoList[i]));
            }
