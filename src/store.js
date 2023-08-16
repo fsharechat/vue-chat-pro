@@ -137,7 +137,7 @@ const state = {
     firstLogin: false,
     emptyMessage: false,
     //修改全屏模式
-    changeFullScreenMode: false,
+    changeFullScreenMode: true,
     appHeight: 638,
     visibilityState: 'visible',
     //是否限制音视频对话框
