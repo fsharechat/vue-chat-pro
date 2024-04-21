@@ -2,8 +2,8 @@
 export const WS_PROTOCOL = 'wss';
 // export const WS_IP = 'chat.comsince.cn';
 //使用nginx 配置的话ws_ip 配置为server.comsince.cn/ws ，如果不适用nginx代理，配置如下：server.comsince.cn:9326
-export const WS_IP = 'server.comsince.cn/ws';
-export const HTTP_IP = 'server.comsince.cn';
+export const WS_IP = 'backend-websocket.fsharechat.cn/ws';
+export const HTTP_IP = 'backend-http.fsharechat.cn';
 export const WS_PORT = 9326;
 export const HEART_BEAT_INTERVAL = 25 * 1000;
 export const RECONNECT_INTERVAL = 30 * 1000;
