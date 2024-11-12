@@ -66,8 +66,9 @@
                     <p class="value" contenteditable="true" @keydown.enter="modifyRemark" @blur="modifyRemarkBlur">{{selectedFriend.remark}}</p>
                 </div>
 	   	    	<div class="area"><span>地&nbsp&nbsp&nbsp区</span>{{selectedFriend.area}}</div>
-	   	    	<div class="wxid"><span>微信号</span>{{selectedFriend.wxid}}</div>
+	   	    	<div class="wxid"><span>飞享号</span>{{selectedFriend.wxid}}</div>
                 <div class="mobile"><span>手机号</span>{{selectedFriend.mobile}}</div>
+                <div class="wxid"><span>邮箱</span>{{selectedFriend.email}}</div>
 	   	    </div>
 	   	    <div class="send" @click="send">
     	        <span>发消息</span>

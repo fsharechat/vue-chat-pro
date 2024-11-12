@@ -10,7 +10,7 @@
         <img src="../../assets/img/logo.png" alt="">
         <p>输入账号进行安全登录</p>
       </div>
-      <label style="margin-top: 50px">手机号码：</label>
+      <label style="margin-top: 50px">手机号码/邮箱：</label>
       <input v-model="mobile" type="tel" pattern="^\d{11}$" title="请输入账号">
       <label>验证码：</label>
       <div class="pass-form">
@@ -58,10 +58,10 @@ export default {
            localStorage.setItem(KEY_VUE_DEVICE_ID,vueDeviceId);
         }
         console.log('vue deviceId '+vueDeviceId);
-        if(!(/^1[3|4|5|7|8|9]\d{9}$/.test(this.mobile))){
-           this.$message.error('请输入正确的手机号');
-           return; 
-        }
+        // if(!(/^1[3|4|5|7|8|9]\d{9}$/.test(this.mobile))){
+        //    this.$message.error('请输入正确的手机号');
+        //    return; 
+        // }
         axios({
             method: 'post',
             url: LOGIN_API,
@@ -99,10 +99,10 @@ export default {
         }
     },
     sendVerifyCode(){
-        if(!(/^1[3|4|5|7|8|9]\d{9}$/.test(this.mobile))){
-           this.$message.error('请输入正确的手机号');
-           return; 
-        }
+        // if(!(/^1[3|4|5|7|8|9]\d{9}$/.test(this.mobile))){
+        //    this.$message.error('请输入正确的手机号');
+        //    return; 
+        // }
         axios({
           method: 'post',
           url: SNED_VERIFY_CODE_API,
