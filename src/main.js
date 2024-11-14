@@ -25,7 +25,7 @@ Vue.use(ElementUI);
 import vueAMap from 'vue-amap'
 Vue.use(vueAMap)
 vueAMap.initAMapApiLoader({
-    key: "e1dedc6bdd765d46693986ff7ff969f4",
+    key: "4f611f19dee1fc6b89506aa88da5f522",
     plugin: [
         "AMap.Autocomplete", //输入提示插件
         "AMap.PlaceSearch", //POI搜索插件
