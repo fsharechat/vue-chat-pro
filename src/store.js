@@ -1154,6 +1154,17 @@ const getters = {
              noInitFriendList.push(friend);
            }
        }
+
+        const friendKeys = [...friendMap.keys()];
+        const sortedFriendKeys = friendKeys.sort((keyA, keyB) => keyA.localeCompare(keyB));
+
+        console.log("排序后的键:", sortedFriendKeys);
+        var sortedFriendMap = new Map();
+        for(var friendKey of sortedFriendKeys){
+            sortedFriendMap.set(friendKey,friendMap.get(friendKey))
+        }
+        console.log("排序后的朋友列表:",sortedFriendMap);
+
        if(state.friendlist.length > 0){
          allFriendList.push(state.friendlist[0]);
        }
@@ -1162,7 +1173,7 @@ const getters = {
               allFriendList.push(friend);
            }
        }
-       for(var [key,friendList] of friendMap){
+       for(var [key,friendList] of sortedFriendMap){
            for(var friend of friendList){
              allFriendList.push(friend);
            }
