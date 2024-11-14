@@ -50,6 +50,7 @@ const state = {
             remark: "新的朋友",  //备注
             area: "",  //地区
             mobile: "", //手机号
+            email: "", //邮箱
         }
         
     ],
