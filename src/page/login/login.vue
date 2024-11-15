@@ -101,7 +101,7 @@ export default {
     },
     handleAccountInputChange(){
       // console.log("输入: ",this.mobile)
-      if(this.validatePhoneOrEmail(this.mobile)){
+      if(this.validatePhoneOrEmail(this.mobile) && this.sendVerifyBtnText === '发送验证码'){
         this.sendVerifyBtnDisabled = false;
       } else {
         this.sendVerifyBtnDisabled = true;
@@ -270,7 +270,7 @@ export default {
     height: 42px;
   }
 /**光标移动 */
-  .pass-form .send-verify-code:hover {
+  /* .pass-form .send-verify-code:hover {
     background-color: #2f86f6;
-  }
+  } */
 </style>
