@@ -924,6 +924,11 @@ const mutations = {
     },
 
     loginOut(state,message){
+        //退出清除当前登录用户信息
+        state.user = {
+            name: 'unknown',
+            img: 'static/images/vue.jpg'
+        };
         state.userId = '';
         state.token = '';
         localStorage.setItem(KEY_VUE_USER_ID,'');
