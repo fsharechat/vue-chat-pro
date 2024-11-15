@@ -14,10 +14,13 @@
       <input v-model="mobile"  @input="handleAccountInputChange" type="text" title="请输入账号">
       <label>验证码：</label>
       <div class="pass-form">
-        <input class="pass-input" v-model="code" type="num" title="请输入密码" @keydown.enter="loginEnter">
+        <input class="pass-input" v-model="code" type="num" title="请输入密码" @input="handleCodeInputChange" @keydown.enter="loginEnter">
         <el-button class="send-verify-code" type="primary" :disabled="sendVerifyBtnDisabled" @click="sendVerifyCode">{{sendVerifyBtnText}}</el-button>
       </div>
-      <input class="bt" @click="login" type="submit" value="登录">
+
+      <el-button class="bt" type="primary" :disabled="loginBthDisabled" @click="login">登录</el-button>
+
+      <!-- <input class="bt" @click="login" type="submit" :disabled=true value="登录"> -->
     </div>
   </div>
 </template>
@@ -39,7 +42,8 @@ export default {
       code: '',
       countDownTimer: null,
       sendVerifyBtnText: '发送验证码',
-      sendVerifyBtnDisabled: false,
+      sendVerifyBtnDisabled: true,
+      loginBthDisabled: true,
       loginAPI: LOGIN_API, // 通过用户ID登录接口
     }
   },
@@ -96,9 +100,19 @@ export default {
         }
     },
     handleAccountInputChange(){
-      console.log("输入: ",this.mobile)
+      // console.log("输入: ",this.mobile)
       if(this.validatePhoneOrEmail(this.mobile)){
         this.sendVerifyBtnDisabled = false;
+      } else {
+        this.sendVerifyBtnDisabled = true;
+      }
+      this.handleCodeInputChange();
+    },
+    handleCodeInputChange(){
+      if(this.code && this.validatePhoneOrEmail(this.mobile)){
+          this.loginBthDisabled = false;
+      } else {
+          this.loginBthDisabled = true;
       }
     },
     validatePhoneOrEmail(input) {
@@ -231,8 +245,9 @@ export default {
   .login_panel .bt {
     margin-top: 35px;
     width: 100%;
+    height: 40px;
     color: #ffffff;
-    background: #379df6;
+    /* background: #379df6; */
     cursor: pointer;
   }
   .login_panel .bt:hover {
@@ -253,5 +268,9 @@ export default {
     float: left;
     width: 103px;
     height: 42px;
+  }
+/**光标移动 */
+  .pass-form .send-verify-code:hover {
+    background-color: #2f86f6;
   }
 </style>
