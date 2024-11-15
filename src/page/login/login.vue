@@ -11,7 +11,7 @@
         <p>输入账号进行安全登录</p>
       </div>
       <label style="margin-top: 50px">手机号码/邮箱：</label>
-      <input v-model="mobile" type="tel" pattern="^\d{11}$" title="请输入账号">
+      <input v-model="mobile"  @input="handleAccountInputChange" type="text" title="请输入账号">
       <label>验证码：</label>
       <div class="pass-form">
         <input class="pass-input" v-model="code" type="num" title="请输入密码" @keydown.enter="loginEnter">
@@ -58,10 +58,7 @@ export default {
            localStorage.setItem(KEY_VUE_DEVICE_ID,vueDeviceId);
         }
         console.log('vue deviceId '+vueDeviceId);
-        // if(!(/^1[3|4|5|7|8|9]\d{9}$/.test(this.mobile))){
-        //    this.$message.error('请输入正确的手机号');
-        //    return; 
-        // }
+
         axios({
             method: 'post',
             url: LOGIN_API,
@@ -98,11 +95,27 @@ export default {
             this.login();
         }
     },
+    handleAccountInputChange(){
+      console.log("输入: ",this.mobile)
+      if(this.validatePhoneOrEmail(this.mobile)){
+        this.sendVerifyBtnDisabled = false;
+      }
+    },
+    validatePhoneOrEmail(input) {
+        const phoneRegex = /^1[3-9]\d{9}$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return phoneRegex.test(input) || emailRegex.test(input);
+    },
     sendVerifyCode(){
         // if(!(/^1[3|4|5|7|8|9]\d{9}$/.test(this.mobile))){
         //    this.$message.error('请输入正确的手机号');
         //    return; 
         // }
+        if(!this.validatePhoneOrEmail(this.mobile)){
+          this.$message.error('请输入正确的手机号或者邮箱');
+          return;
+        }
+        this.sendVerifyBtnDisabled = true;
         axios({
           method: 'post',
           url: SNED_VERIFY_CODE_API,
