@@ -18,7 +18,7 @@
         <el-button class="send-verify-code" type="primary" :disabled="sendVerifyBtnDisabled" @click="sendVerifyCode">{{sendVerifyBtnText}}</el-button>
       </div>
 
-      <el-button class="bt" type="primary" :disabled="loginBthDisabled" @click="login">登录</el-button>
+      <el-button class="bt" type="primary" :disabled="loginBthDisabled" @click="login">{{loginText}}</el-button>
 
       <!-- <input class="bt" @click="login" type="submit" :disabled=true value="登录"> -->
     </div>
@@ -42,6 +42,7 @@ export default {
       code: '',
       countDownTimer: null,
       sendVerifyBtnText: '发送验证码',
+      loginText: '登录',
       sendVerifyBtnDisabled: true,
       loginBthDisabled: true,
       loginAPI: LOGIN_API, // 通过用户ID登录接口
@@ -62,6 +63,9 @@ export default {
            localStorage.setItem(KEY_VUE_DEVICE_ID,vueDeviceId);
         }
         console.log('vue deviceId '+vueDeviceId);
+
+        this.loginBthDisabled = true
+        this.loginText = "登录中..."
 
         axios({
             method: 'post',
@@ -89,9 +93,13 @@ export default {
                   // this.$electron.ipcRenderer.send('hasLogged', true)
               } else {
                 this.$message.error(response.data.message);
+                this.loginBthDisabled = false;
+                this.loginText = "登录"
               }
           }).catch((error) => {
-            console.log(error)
+             console.log(error)
+             this.loginBthDisabled = false;
+             this.loginText = "登录"
           })
     },
     loginEnter(e){
