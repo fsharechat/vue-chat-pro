@@ -13,14 +13,18 @@ export default class FriendRequestHandler extends AbstractMessageHandler {
             var friendRequests = JSON.parse(proto.content);
             var validRequest = [];
             var targeIds = [];
-            for(var friendRequest of friendRequests){
-               if(friendRequest.from != LocalStore.getUserId()){
-                  validRequest.push(friendRequest);
-                  targeIds.push(friendRequest.from);
-               }
+            console.log("friendRequests=",friendRequests)
+            if(friendRequests && friendRequests.length  > 0){
+                for(var friendRequest of friendRequests){
+                    if(friendRequest.from != LocalStore.getUserId()){
+                       validRequest.push(friendRequest);
+                       targeIds.push(friendRequest.from);
+                    }
+                 }
+                 this.vueWebsocket.getUserInfos(targeIds);
+                 this.vueWebsocket.sendAction("updateFriendRequest",validRequest);
             }
-            this.vueWebsocket.getUserInfos(targeIds);
-            this.vueWebsocket.sendAction("updateFriendRequest",validRequest);
+            
         }
     }
 }
