@@ -24,6 +24,7 @@ import MessageStatus from './websocket/message/messageStatus';
 // import { ipcRenderer } from 'electron'
 import StateMessageReport from './websocket/model/stateMessageReport';
 import ChangeGroupNameNotification from './websocket/message/notification/changeGroupNameNotification';
+import { pinyin } from 'pinyin-pro';
 
 Vue.use(Vuex)
 
@@ -295,11 +296,23 @@ const mutations = {
                   var friendData = state.friendDatas.find(friend => friend.friendUid == friendUid)
                   if(friendData && friendData.alias && friendData.alias != ""){
                      currentUser.remark = friendData.alias
+                     //设置了朋友别名，重新计算首字母
+                     var pinyinInitial = pinyin(currentUser.remark, { pattern: 'first', toneType: 'none', type: 'array' });
+                     var initial = pinyinInitial[0];
+                     console.log("remark "+currentUser.remark+" initial "+initial)
+                     var reg= /^[A-Za-z]/;
+                     if(reg.test(initial)){
+                        initial = initial.toUpperCase();
+                     } else {
+                        initial = "#";
+                     }
+                     currentUser.initial = initial;
                   }  
                   var isExist = false;
                   for(var friend of state.friendlist){
                     if(friend.wxid === currentUser.wxid){
                         isExist = true;
+                        friend.initial = currentUser.initial;
                         friend.nickname = currentUser.nickname;
                         friend.img = currentUser.img;
                         friend.remark = currentUser.remark;
