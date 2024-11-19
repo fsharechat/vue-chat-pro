@@ -31,6 +31,7 @@ Vue.use(Vuex)
 //获取当前时间
 const now = new Date();
 const state = {
+    onlineStatus: false,
 	// 输入的搜索值
 	searchText: '',
 	// 当前登录用户
@@ -168,11 +169,14 @@ const state = {
 }
 
 const mutations = {
+    setOnlineStatus(state,isOnline){
+        state.onlineStatus = isOnline;
+    },
     // 从localStorage 中获取数据
-    initData (state) {
+    initData (state,errorHandler) {
         state.userId = localStorage.getItem('vue-user-id');
         state.token = localStorage.getItem('vue-token');
-        const vueSocket = new VueWebSocket();
+        const vueSocket = new VueWebSocket(errorHandler);
         state.vueSocket = vueSocket;
         //voip client
         state.voipClient = new VoipClient(store);
@@ -1285,7 +1289,8 @@ const actions = {
     updateUserInfos: ({ commit }, value) => commit('updateUserInfos', value),
     sendMessage: ({ commit }, msg) => commit('sendMessage', msg),
     send: ({ commit }) => commit('send'),
-    initData: ({ commit }) => commit('initData'),
+    initData: ({ commit }, errorHandler) => commit('initData', errorHandler),
+    setOnlineStatus: ({commit}, isonline) => commit("setOnlineStatus",isonline),
     updateConversationInfo: ({ commit }, value) => commit('updateConversationInfo', value),
     updateConversationIntro: ({ commit }, value) => commit('updateConversationIntro', value),
     addProtoMessage: ({ commit }, value) => commit('addProtoMessage', value),

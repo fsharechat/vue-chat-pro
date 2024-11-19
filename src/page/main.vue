@@ -22,7 +22,7 @@ export default {
      groupVideoCall
    },
    created () {
-       this.$store.dispatch('initData');
+       this.$store.dispatch('initData',this.handleWebSocketError);
    },
    computed: {
        ...mapState([
@@ -46,7 +46,16 @@ export default {
    methods: {
     handleVisiable(e) {
         this.$store.dispatch('visibilityChange',e.target.visibilityState);
-      }  
+      },
+    handleWebSocketError(isError = false,message) {
+      // 使用 this.$message 显示错误信息
+      if(isError){
+          this.$message.error(message);
+      } else {
+          this.$message.success(message);
+      }
+      
+    },  
    }
    
    

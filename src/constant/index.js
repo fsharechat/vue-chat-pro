@@ -6,7 +6,7 @@ export const WS_IP = 'backend-websocket.fsharechat.cn/ws';
 export const HTTP_IP = 'backend-http.fsharechat.cn';
 export const WS_PORT = 9326;
 export const HEART_BEAT_INTERVAL = 25 * 1000;
-export const RECONNECT_INTERVAL = 30 * 1000;
+export const RECONNECT_INTERVAL = 1 * 1000;
 export const BINTRAY_TYPE = 'blob';
 
 //signal

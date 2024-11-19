@@ -48,6 +48,7 @@ export default class VueWebSocket {
     userDisconnect = false;
     isconnected = false;
     resolvePromiseMap = new Map();
+    errorHandler;
     
     // constructor(ws_protocol,ip,port,heartbeatTimeout,reconnectInterval,binaryType,vuexStore){
     //     this.ws_protocol = ws_protocol;
@@ -61,7 +62,7 @@ export default class VueWebSocket {
     //     this.initHandlerList();
     // }
 
-    constructor(){
+    constructor(errorHandler){
         this.ws_protocol = WS_PROTOCOL;
         this.ip= WS_IP;
         this.port = WS_PORT;
@@ -69,6 +70,8 @@ export default class VueWebSocket {
         this.reconnectInterval = RECONNECT_INTERVAL;
         this.binaryType = BINTRAY_TYPE;
         this.url = WS_PROTOCOL + '://' + WS_IP ;
+        this.errorHandler = errorHandler;
+        console.log("errorhandler ",this.errorHandler)
         this.initHandlerList();
         this.connect(true);
     }
@@ -91,6 +94,8 @@ export default class VueWebSocket {
         var websocketObj = this;
         this.ws.onopen = function (event) {
             console.log("ws open");
+            websocketObj.errorHandler(false,"飞享服务链接成功")
+            websocketObj.sendAction("setOnlineStatus",true);
             websocketObj.isconnected = true;
             websocketObj.lastInteractionTime(new Date().getTime());
             websocketObj.pingIntervalId = setInterval(() => {
@@ -107,6 +112,8 @@ export default class VueWebSocket {
         }
         this.ws.onclose = function(event) {
             websocketObj.isconnected = false;
+            websocketObj.sendAction("setOnlineStatus",false);
+            websocketObj.errorHandler(true,"飞享服务链接关闭，等待重连")
             console.log("ws onclose");
             websocketObj.ws.close();
             clearInterval(websocketObj.pingIntervalId);
@@ -117,6 +124,8 @@ export default class VueWebSocket {
         }
         this.ws.onerror = function(event) {
             console.log("connect error");
+            websocketObj.sendAction("setOnlineStatus",false);
+            websocketObj.errorHandler(true,"飞享服务链接失败，请检查网络是否正常")
         }
     }
 

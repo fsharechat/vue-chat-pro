@@ -2,8 +2,12 @@
 <template>
 	<div class="mycard" ref="mycardRef">
 	    <header>
-	    	<img :src="user.img" class="avatar" @click="showPersonCard" @dblclick="changeFullScreenMode">
-			<personcard v-if="showPersonalCard" v-bind:userId="userId"></personcard>
+			<div class="avatar-container">
+				<img :src="user.img" class="avatar" @click="showPersonCard" @dblclick="changeFullScreenMode">
+				<span class="status-dot" :class="statusClass"></span>
+    		</div>
+	    	<!-- <img :src="user.img" class="avatar" @click="showPersonCard" @dblclick="changeFullScreenMode">
+			<personcard v-if="showPersonalCard" v-bind:userId="userId"></personcard> -->
 	    </header>
 	    <div class="navbar" @click="clearSearch">
 			<div class="conversation-item">
@@ -52,11 +56,15 @@ export default {
        ...mapState([
 			 'user',
 			 'userId',
-			 'newFriendRequestCount'
+			 'newFriendRequestCount',
+			 'onlineStatus'
 	   ]),
 	   ...mapGetters([
 		   'unreadTotalCount',
-	   ])
+	   ]),
+	   statusClass() {
+      	return this.onlineStatus ? "status-online" : "status-offline";
+    	},
     },
     methods: {
 		showPersonCard(){
@@ -104,6 +112,28 @@ export default {
     position: relative
     width: 100%
     height: 100%
+	.avatar-container {
+		position: relative;
+		display: inline-block;
+	}
+	.status-dot {
+		position: absolute;
+		top: 15px;
+		right: 8px;
+		width: 10px;
+		height: 10px;
+		background-color: red;
+		border-radius: 50%;
+		border: 1px solid white;
+		box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+	}
+	.status-online {
+		background-color: green;
+	}
+
+	.status-offline {
+		background-color: red;
+	}
     .avatar
 	    width: 36px
 	    height: 36px
