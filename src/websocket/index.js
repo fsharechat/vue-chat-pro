@@ -113,12 +113,12 @@ export default class VueWebSocket {
         this.ws.onclose = function(event) {
             websocketObj.isconnected = false;
             websocketObj.sendAction("setOnlineStatus",false);
-            websocketObj.errorHandler(true,"飞享服务链接关闭，等待重连")
             console.log("ws onclose");
             websocketObj.ws.close();
             clearInterval(websocketObj.pingIntervalId);
             if(!websocketObj.userDisconnect){
                 console.log("reconnect websocket");
+                websocketObj.errorHandler(true,"飞享服务链接关闭，等待重连")
                 websocketObj.reconnect(event);
             }
         }

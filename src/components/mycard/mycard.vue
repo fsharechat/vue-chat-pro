@@ -6,8 +6,8 @@
 				<img :src="user.img" class="avatar" @click="showPersonCard" @dblclick="changeFullScreenMode">
 				<span class="status-dot" :class="statusClass"></span>
     		</div>
-	    	<!-- <img :src="user.img" class="avatar" @click="showPersonCard" @dblclick="changeFullScreenMode">
-			<personcard v-if="showPersonalCard" v-bind:userId="userId"></personcard> -->
+	    	<!-- <img :src="user.img" class="avatar" @click="showPersonCard" @dblclick="changeFullScreenMode">-->
+			<personcard v-if="showPersonalCard" v-bind:userId="userId"></personcard>
 	    </header>
 	    <div class="navbar" @click="clearSearch">
 			<div class="conversation-item">
