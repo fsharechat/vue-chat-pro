@@ -21,8 +21,12 @@ export default class FriendRequestHandler extends AbstractMessageHandler {
                        targeIds.push(friendRequest.from);
                     }
                  }
-                 this.vueWebsocket.getUserInfos(targeIds);
-                 this.vueWebsocket.sendAction("updateFriendRequest",validRequest);
+                 if(targeIds.length > 0){
+                    this.vueWebsocket.getUserInfos(targeIds);
+                 }
+                 if(validRequest.length > 0){
+                    this.vueWebsocket.sendAction("updateFriendRequest",validRequest);
+                 }
             }
             
         }
