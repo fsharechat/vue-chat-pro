@@ -1,5 +1,6 @@
 //服务端不是tls，则配置为ws
 export const WS_PROTOCOL = 'wss';
+export const HTTP_PROTOCOL = 'https';
 // export const WS_IP = 'chat.comsince.cn';
 //使用nginx 配置的话ws_ip 配置为server.comsince.cn/ws ，如果不适用nginx代理，配置如下：server.comsince.cn:9326
 export const WS_IP = 'backend-websocket.fsharechat.cn/ws';
@@ -47,7 +48,7 @@ export const MRP = "MRP";
 export const MRN = "MRN";
 export const MRR = "MRR";
 
-export const HTTP_HOST = "https://"+HTTP_IP + "/"
+export const HTTP_HOST = HTTP_PROTOCOL+"://"+HTTP_IP + "/"
 export const LOGIN_API = HTTP_HOST + "login";
 export const SNED_VERIFY_CODE_API = HTTP_HOST + "send_code";;
 

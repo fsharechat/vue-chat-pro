@@ -25,7 +25,7 @@ import MessageStatus from './websocket/message/messageStatus';
 import StateMessageReport from './websocket/model/stateMessageReport';
 import ChangeGroupNameNotification from './websocket/message/notification/changeGroupNameNotification';
 import { pinyin } from 'pinyin-pro';
-
+import FscMessage from './websocket/message/FscMessage';
 Vue.use(Vuex)
 
 //获取当前时间
@@ -495,7 +495,9 @@ const mutations = {
         this.commit("preAddProtoMessage",protoMessage)
 
         //发送消息到对端
-        state.vueSocket.sendMessage(protoMessage);
+        //增加localMessageId
+        
+        state.vueSocket.sendMessage(FscMessage.convertToFscMessage(message));
     },
 
     //图片，视频类消息，需要先加入消息，然后上传成功后在更新message content
@@ -803,6 +805,11 @@ const mutations = {
                 }
                 stateChatMessage.protoMessages.push(protoMessage);
                } else {
+                   if(isSameProtoMessage.messageUid == '0'){
+                     isSameProtoMessage.messageUid = protoMessage.messageUid;
+                     isSameProtoMessage.status = MessageStatus.Sent;
+                     console.log("update messageUid "+isSameProtoMessage.messageUid);
+                   }
                    isExistMessage = true;
                }
            }

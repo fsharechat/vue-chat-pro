@@ -2,6 +2,7 @@ import Conversation from '../model/conversation'
 import MessageStatus from './messageStatus'
 import store from '../../store'
 import LocalStore from '../store/localstore';
+import MessageShardingUtil from '../utils/MessageShardingUtil';
 /***
  *  message in json format
     {
@@ -82,7 +83,7 @@ export default class Message {
         message.status = MessageStatus.Sending;
         message.timestamp = new Date().getTime();
         message.direction = 0;
-        message.messageId = new Date().getTime(); 
+        message.messageId = MessageShardingUtil.generateId(); 
         return message;
     }
 
@@ -104,7 +105,7 @@ export default class Message {
         message.status = MessageStatus.Sending;
         message.timestamp = new Date().getTime();
         message.direction = 0;
-        message.messageId = new Date().getTime(); 
+        message.messageId = MessageShardingUtil.generateId(); 
         return message;
     }
 }

@@ -31,7 +31,11 @@ export default class ProtoMessage {
             protoMessage.status = MessageStatus.Unread;
         }
         protoMessage.tos = obj.tos;
-        protoMessage.messageId = obj.messageId;
+        if (obj.localMessageId !== undefined && obj.localMessageId !== null && obj.localMessageId !== '' && obj.localMessageId !== '0') {
+            protoMessage.messageId = obj.localMessageId;
+        } else {
+            protoMessage.messageId = obj.messageId;
+        }
         protoMessage.messageUid = obj.messageId;
         protoMessage.timestamp = obj.timestamp;
         protoMessage.conversationType = obj.conversationType;
