@@ -29,8 +29,12 @@
 			</div> 
 	    </div>
 	    <footer>
+	        <i title = "关于" class="about-icon" @click="showAbout">i</i>
 	        <i title = "退出" class="icon iconfont icon-tuichu" @click="loginOut"></i>
 	    </footer>
+	    
+	    <!-- 关于对话框 -->
+	    <aboutDialog :visible.sync="showAboutDialog"></aboutDialog>
 	</div>
 </template>
 
@@ -38,18 +42,21 @@
 import { mapState, mapGetters } from 'vuex'
 import addtip from '../../components/menu/addtip'
 import personcard from '../../components/menu/personalCard'
+import aboutDialog from '../../components/menu/aboutDialog'
 import webSocketCli from '../../websocket/websocketcli'
 import Logger from '../../websocket/utils/logger'
 
 export default {
 	components: {
 		addtip,
-		personcard
+		personcard,
+		aboutDialog
 	},
 	data() {
 		return {
 			showAddRequestTip: false,
-			showPersonalCard: false
+			showPersonalCard: false,
+			showAboutDialog: false
 		}
 	},
     computed: {
@@ -72,6 +79,9 @@ export default {
 		},
     	clearSearch() {
     		this.$store.dispatch('search', '')
+		},
+		showAbout(){
+			this.showAboutDialog = true
 		},
 		loginOut(){
 			this.$store.dispatch('loginOut','');
@@ -200,4 +210,38 @@ export default {
 	    bottom: 20px
 	    width: 100%
 	    text-align: center
+	    i
+	        display: inline-block
+	        font-size: 26px
+	        margin-top: 0
+	        padding: 0 16px
+	        box-sizing: border-box
+	        color: rgb(173,174,175)
+	        opacity: 1
+	        cursor: pointer
+	        &:hover
+	            opacity: 1
+	    .about-icon
+	        display: inline-block
+	        width: 24px
+	        height: 24px
+	        border: 2px solid rgb(173,174,175)
+	        border-radius: 50%
+	        background-color: transparent
+	        color: rgb(173,174,175)
+	        text-align: center
+	        line-height: 20px
+	        font-size: 14px
+	        font-weight: bold
+	        font-style: normal
+	        font-family: 'Times New Roman', serif
+	        cursor: pointer
+	        margin: 0 16px
+	        padding: 0 !important
+	        vertical-align: middle
+	        box-sizing: border-box
+	        transition: all 0.3s ease
+	        &:hover
+	            border-color: rgb(0,220,65)
+	            color: rgb(0,220,65)
 </style>
