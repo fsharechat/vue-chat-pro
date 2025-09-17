@@ -34,4 +34,20 @@ export default class FscMessage {
         return fscMessage;
     }
 
+    static convertFromProtomessage(protomessage){
+        var fscmessage = new FscMessage();
+        fscmessage.conversationType = protomessage.conversationType;
+        fscmessage.target = protomessage.target;
+        fscmessage.line = protomessage.line;
+        fscmessage.from = protomessage.from;
+        fscmessage.tos = protomessage.tos;
+        fscmessage.direction = protomessage.direction;
+        fscmessage.status = protomessage.status;
+        fscmessage.messageId = protomessage.messageId;
+        fscmessage.localMessageId = protomessage.messageId;
+        fscmessage.timestamp = protomessage.timestamp;
+        fscmessage.content = protomessage.content;
+        return fscmessage;
+    }
+
 }

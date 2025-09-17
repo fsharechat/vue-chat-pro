@@ -537,9 +537,9 @@ const mutations = {
                 protoMessage.status = MessageStatus.Sending;
                 var messagePayload = updateMessage.messageContent.encode();
                 protoMessage.content = ProtoMessageContent.toProtoMessageContent(messagePayload);
+                state.vueSocket.sendMessage(FscMessage.convertFromProtomessage(protoMessage));
             }
         }
-        state.vueSocket.sendMessage(protoMessage);
     },
 
 
