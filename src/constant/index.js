@@ -47,6 +47,7 @@ export const MDR = "MDR";
 export const MRP = "MRP";
 export const MRN = "MRN";
 export const MRR = "MRR";
+export const SAI = "SAI";
 
 export const HTTP_HOST = HTTP_PROTOCOL+"://"+HTTP_IP + "/"
 export const LOGIN_API = HTTP_HOST + "login";

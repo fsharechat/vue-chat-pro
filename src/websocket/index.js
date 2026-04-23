@@ -1,4 +1,4 @@
-import {PUBLISH, FP, UPUI, MP, MS, KEY_VUE_USER_ID, KEY_VUE_DEVICE_ID, DISCONNECT, GPGI, GQNUT, US, FAR, FRP, FHR, MMI, GPGM, GC, GQ, PUB_ACK, ERROR_CODE, MR, GAM, GMI, GKM, GD, GMURL, FALS, LRM, MDR, MRP, MRR} from '../constant'
+import {PUBLISH, FP, UPUI, MP, MS, KEY_VUE_USER_ID, KEY_VUE_DEVICE_ID, DISCONNECT, GPGI, GQNUT, US, FAR, FRP, FHR, MMI, GPGM, GC, GQ, PUB_ACK, ERROR_CODE, MR, GAM, GMI, GKM, GD, GMURL, FALS, LRM, MDR, MRP, MRR, SAI} from '../constant'
 import {decrypt,encrypt} from './utils/aes'
 import {CONNECT} from '../constant'
 import {WebSocketProtoMessage} from './message/websocketprotomessage'
@@ -43,6 +43,7 @@ import DeliveryReportHandler from './handler/deliveryReportHandler';
 import PullMessageReportHandler from './handler/pullMessageReportHandler';
 import NotifyMessageReportHandler from './handler/notifyMessageReportHandler';
 import ReadReportHandler from './handler/ReadReportHandler';
+import StreamingAiHandler from './handler/streamingAiHandler';
 export default class VueWebSocket {
     handlerList = [];
     userDisconnect = false;
@@ -196,6 +197,7 @@ export default class VueWebSocket {
         this.handlerList.push(new ReadReportHandler(this))
         this.handlerList.push(new PullMessageReportHandler(this))
         this.handlerList.push(new NotifyMessageReportHandler(this))
+        this.handlerList.push(new StreamingAiHandler(this))
     }
 
     processMessage(data){

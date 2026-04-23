@@ -40,7 +40,9 @@
                                     
                                     <div v-if="isfaceMessage(item)" class="text" v-html="replaceFace(item.content.searchableContent)"></div>
                                     <div v-if="isLinkTextMessage(item)" class="text" v-html="textLinkMessage(item)" @click="handleMsgClicked"></div>
-                                    <div v-if="isPureTextMessage(item)" class="text" v-text="textMessage(item)"></div>
+                                    <div v-if="isPureTextMessage(item)" class="text">
+                                        <span v-text="textMessage(item)"></span><span v-if="item.streaming" class="streaming-cursor">|</span>
+                                    </div>
 
                                     <div v-if="item.content.type === 2">
                                         <div :id="'audio-div-'+item.messageId" class="auido-message-receive" v-if="item.direction == 1">
@@ -188,7 +190,8 @@ export default {
             'groupMemberMap',
             'isLoadRemoteMessage',
             'fileDownloadStatus',
-            'stateMessageReports'
+            'stateMessageReports',
+            'streamingTokenCount'
         ]),
         showGroupInfo: {
            get() {
@@ -235,6 +238,14 @@ export default {
                   this.messageDatalistHeight = currentListheight
               }
           }, 0)
+        },
+        // 每收到一个 streaming token，计数器递增，滚动到底部
+        streamingTokenCount() {
+            this.$nextTick(() => {
+                if (this.$refs.list) {
+                    this.$refs.list.scrollTop = this.$refs.list.scrollHeight;
+                }
+            });
         },
         //切换会话关闭语音播放
         selectedChat(){
@@ -910,6 +921,17 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+   .streaming-cursor
+      display: inline-block
+      margin-left: 2px
+      animation: blink 0.8s step-start infinite
+   @keyframes blink
+      0%, 100%
+         opacity: 1
+      50%
+         opacity: 0
+   .text
+      white-space: pre-wrap
    .receive-image
       max-width : 115px;
       max-height : 330px;

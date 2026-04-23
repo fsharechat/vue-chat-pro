@@ -32,6 +32,9 @@ Vue.use(Vuex)
 const now = new Date();
 const state = {
     onlineStatus: false,
+    streamingMap: {},              // streamId -> { target, virtualId }
+    pendingReplacementTargets: [], // isDone 后等待真实消息替换虚拟占位的 target 列表
+    streamingTokenCount: 0,        // 每收到一个 token 递增，供组件 watch 触发滚动
 	// 输入的搜索值
 	searchText: '',
 	// 当前登录用户
@@ -784,7 +787,23 @@ const mutations = {
     },
 
     addProtoMessage(state,protoMessage){
-       state.isLoadRemoteMessage = false 
+       state.isLoadRemoteMessage = false
+
+       // 若该会话有流式占位消息待替换，先移除虚拟气泡再插入真实消息
+       const pendingIdx = state.pendingReplacementTargets.indexOf(protoMessage.target);
+       if (pendingIdx !== -1) {
+           state.pendingReplacementTargets.splice(pendingIdx, 1);
+           for (let chatMsg of state.messages) {
+               if (chatMsg.target === protoMessage.target) {
+                   const virtualIdx = chatMsg.protoMessages.findIndex(
+                       m => typeof m.messageId === 'string' && m.messageId.startsWith('stream_')
+                   );
+                   if (virtualIdx !== -1) chatMsg.protoMessages.splice(virtualIdx, 1);
+                   break;
+               }
+           }
+       }
+
         //更新用户信息
        if(state.waitUserIds.indexOf(protoMessage.from) == -1){
            console.log("waiting for get userId "+protoMessage.from);
@@ -1108,7 +1127,7 @@ const mutations = {
               var currentTime = new Date().getTime();
               this.state.vueSocket.uploadDeliveryReport(currentTime,protoMessage.target)
             }
-           
+
             if(state.selectTarget == protoMessage.target && state.visibilityState == 'visible'){
                 console.log("current target "+protoMessage.target +" is visible upload read report")
                 if(protoMessage.conversationType == ConversationType.Group){
@@ -1118,6 +1137,61 @@ const mutations = {
                 }
             }
           }
+    },
+
+    appendStreamingContent(state, { streamId, delta, isDone, target }) {
+        if (!state.streamingMap[streamId]) {
+            // 首个 SAI 事件：创建虚拟占位消息
+            const virtualId = 'stream_' + streamId;
+            const virtualMsg = {
+                messageId: virtualId,
+                from: target,
+                target: target,
+                conversationType: 0,
+                direction: 1,
+                content: { type: 1, searchableContent: '' },
+                streaming: true,
+                timestamp: Date.now(),
+                status: 1,
+                messageUid: '0',
+                line: 0,
+                tos: ''
+            };
+            let chatMsg = state.messages.find(m => m.target === target);
+            if (chatMsg) {
+                chatMsg.protoMessages.push(virtualMsg);
+            } else {
+                const StateChatMessage = state.messages.length > 0
+                    ? Object.getPrototypeOf(state.messages[0]).constructor
+                    : null;
+                const newChatMsg = StateChatMessage ? new StateChatMessage() : { target, name: target, protoMessages: [] };
+                newChatMsg.target = target;
+                newChatMsg.protoMessages = [virtualMsg];
+                state.messages.push(newChatMsg);
+            }
+            Vue.set(state.streamingMap, streamId, { target, virtualId });
+        }
+
+        const entry = state.streamingMap[streamId];
+        if (!entry) return;
+
+        // 追加 token 到占位消息
+        const chatMsg = state.messages.find(m => m.target === entry.target);
+        if (chatMsg) {
+            const msg = chatMsg.protoMessages.find(m => m.messageId === entry.virtualId);
+            if (msg && delta) {
+                msg.content.searchableContent += delta;
+                state.streamingTokenCount++;
+            }
+            if (isDone && msg) {
+                msg.streaming = false;
+                // 标记该会话等待真实消息到达后替换
+                if (!state.pendingReplacementTargets.includes(entry.target)) {
+                    state.pendingReplacementTargets.push(entry.target);
+                }
+                Vue.delete(state.streamingMap, streamId);
+            }
+        }
     }
 
 }
