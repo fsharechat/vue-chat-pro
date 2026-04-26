@@ -38,11 +38,12 @@
                                     <!-- <div v-if="item.content.type === 1 && isfaceMessage(item.content.searchableContent)" class="text" v-html="replaceFace(item.content.searchableContent)"></div> -->
                                     <!-- <div v-if="item.content.type === 1 && !isfaceMessage(item.content.searchableContent)" class="text" v-text="item.content.searchableContent"></div>     -->
                                     
-                                    <div v-if="isfaceMessage(item)" class="text" v-html="replaceFace(item.content.searchableContent)"></div>
-                                    <div v-if="isLinkTextMessage(item)" class="text" v-html="textLinkMessage(item)" @click="handleMsgClicked"></div>
-                                    <div v-if="isPureTextMessage(item)" class="text">
-                                        <span v-text="textMessage(item)"></span><span v-if="item.streaming" class="streaming-cursor">|</span>
-                                    </div>
+                                    <MarkdownText
+                                        v-if="isTextMessage(item)"
+                                        :content="textMessage(item)"
+                                        :streaming="!!item.streaming"
+                                        :emojis="emojis"
+                                    />
 
                                     <div v-if="item.content.type === 2">
                                         <div :id="'audio-div-'+item.messageId" class="auido-message-receive" v-if="item.direction == 1">
@@ -148,13 +149,15 @@ import linkifyUrls from '../../websocket/utils/linkfyurl'
 import Clipboard from 'clipboard'
 import streamSaver from 'streamsaver'
 import BenzAMRRecorder from 'benz-amr-recorder'
+import MarkdownText from './MarkdownText'
 // import electron from 'electron'
 // import downloader from '../../../main/utils/downloader'
 export default {
     components:{
         Xgplayer,
         groupInfo,
-        rightMenu
+        rightMenu,
+        MarkdownText
     },
 
     data(){
@@ -967,6 +970,7 @@ export default {
         padding: 5px 0px
         box-sizing: border-box
         overflow-y: auto
+        overflow-x: hidden
         border-top: 1px solid #e7e7e7
         border-bottom: 1px solid #e7e7e7
         background: #f2f2f2
@@ -1136,6 +1140,7 @@ export default {
                     display: flex;
                     .content-message
                         margin-left: 5px
+                        min-width: 0
                         background-color: #b2e281
                         &:before 
                             right: -12px

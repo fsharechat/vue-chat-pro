@@ -69,16 +69,20 @@ export default {
     width: 100%
     height: 100%
   display: flex
+  overflow: hidden
   width: 75%
   height: 80%
-  border-radius 50px
+  border-radius: 3px
   background-color: #fff
   .sidebar
+    flex-shrink: 0
     width: 60px
     height: 100%
     background: #2b2c2f
   .main
     flex: 1
+    min-width: 0
     height: 100%
+    overflow: hidden
     background: #ffffff
 </style>

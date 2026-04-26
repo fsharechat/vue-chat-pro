@@ -41,9 +41,13 @@ export default {
   display: flex
   width: 100%
   height: 100%
+  overflow: hidden
   .msglist
+    flex-shrink: 0
     width: 280px
     background: #fff
   .chatbox
     flex: 1
+    min-width: 0
+    overflow: hidden
 </style>
