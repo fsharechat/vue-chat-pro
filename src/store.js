@@ -795,11 +795,17 @@ const mutations = {
            state.pendingReplacementTargets.splice(pendingIdx, 1);
            for (let chatMsg of state.messages) {
                if (chatMsg.target === protoMessage.target) {
-                   const virtualIdx = chatMsg.protoMessages.findIndex(
-                       m => typeof m.messageId === 'string' && m.messageId.startsWith('stream_')
+                   // 删除该会话下所有流式虚拟消息（防止旧的孤立占位符残留）
+                   chatMsg.protoMessages = chatMsg.protoMessages.filter(
+                       m => !(typeof m.messageId === 'string' && m.messageId.startsWith('stream_'))
                    );
-                   if (virtualIdx !== -1) chatMsg.protoMessages.splice(virtualIdx, 1);
                    break;
+               }
+           }
+           // 同步清理 streamingMap 中该 target 的所有残留会话
+           for (const sid of Object.keys(state.streamingMap)) {
+               if (state.streamingMap[sid].target === protoMessage.target) {
+                   Vue.delete(state.streamingMap, sid);
                }
            }
        }
